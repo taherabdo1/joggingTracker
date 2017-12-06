@@ -23,8 +23,8 @@
   <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   <java.version>1.8</java.version>
   <com.google.guava.guava.version>23.5-jre</com.google.guava.guava.version>
-  <io.springfox.springfox-swagger2>2.7.0</io.springfox.springfox-swagger2>
-  <io.springfox.springfox-swagger-ui>2.7.0</io.springfox.springfox-swagger-ui>
+  <io.springfox.springfox-swagger2>2.4.0</io.springfox.springfox-swagger2>
+  <io.springfox.springfox-swagger-ui>2.4.0</io.springfox.springfox-swagger-ui>
   <jjwt.version>0.7.0</jjwt.version>
  </properties>
 
@@ -80,6 +80,12 @@
    <groupId>mysql</groupId>
    <artifactId>mysql-connector-java</artifactId>
    <scope>runtime</scope>
+  </dependency>
+  <!-- dozer mapper -->
+  <dependency>
+    <groupId>net.sf.dozer</groupId>
+    <artifactId>dozer</artifactId>
+    <version>5.5.1</version>
   </dependency>
   <dependency>
    <groupId>org.projectlombok</groupId>

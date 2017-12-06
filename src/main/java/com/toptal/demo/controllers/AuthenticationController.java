@@ -1,5 +1,6 @@
 package com.toptal.demo.controllers;
 
+import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,13 +19,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.toptal.demo.entities.ActivateKey;
+import com.toptal.demo.entities.LoginAttempt;
 import com.toptal.demo.entities.User;
 import com.toptal.demo.entities.enums.Role;
 import com.toptal.demo.repositories.ActivateKeyRepository;
+import com.toptal.demo.repositories.LoginAttemptRepository;
 import com.toptal.demo.repositories.UserRepository;
 import com.toptal.demo.security.request.Login;
 import com.toptal.demo.security.response.session.OperationResponse.ResponseStatusEnum;
-import com.toptal.demo.security.response.session.SessionItem;
+import com.toptal.demo.security.response.UserDto;
 import com.toptal.demo.security.response.session.SessionResponse;
 import com.toptal.demo.service.EmailService;
 
@@ -42,6 +45,9 @@ public class AuthenticationController {
 
     @Autowired
     ActivateKeyRepository activateKeyRepository;
+
+    @Autowired
+    LoginAttemptRepository loginAttemptRepository;
 
     @Autowired
     EmailService emailService;
@@ -93,7 +99,7 @@ public class AuthenticationController {
     @ResponseBody
     public SessionResponse signup(@RequestBody final Login credentials, final HttpServletRequest request, final HttpServletResponse response) {
         final User newUser = new User();
-        newUser.setActive(false);
+        newUser.setActivated(false);
         newUser.setPassword(credentials.getPassword());
         newUser.setEmail(credentials.getEmail());
         newUser.setRole(Role.ROLE_USER);
@@ -102,9 +108,9 @@ public class AuthenticationController {
         if (null != createdUser.getId()) {
             resp.setOperationStatus(ResponseStatusEnum.SUCCESS);
             resp.setOperationMessage("User signed up successflly");
-            final SessionItem sessionItem = new SessionItem();
+            final UserDto sessionItem = new UserDto();
             sessionItem.setRole(createdUser.getRole().toString());
-            sessionItem.setUserId(createdUser.getId());
+            sessionItem.setId(createdUser.getId());
             sessionItem.setEmail(createdUser.getEmail());
             resp.setItem(sessionItem);
 
@@ -115,6 +121,13 @@ public class AuthenticationController {
             activateKey.setKeySerial(userActivationKey);
 
             final ActivateKey createdActivateKey = activateKeyRepository.save(activateKey);
+
+            // add the new user to the login attempt tracker table
+            final LoginAttempt loginAttempt = new LoginAttempt();
+            loginAttempt.setDate(new Date());
+            loginAttempt.setNumberOfTrials(0);
+            loginAttempt.setUser(createdUser);
+            loginAttemptRepository.save(loginAttempt);
             // send mail to activate the account
             if (createdActivateKey.getId() != null) {
                 emailService.sendConfirmationMessage(createdUser.getEmail(), WELCOME_EMAIL_SUBJECT, buildVerificationMail(createdActivateKey.getKeySerial()));
@@ -130,10 +143,10 @@ public class AuthenticationController {
     @ApiOperation(value = "Activate the user by activation key sent by mail", code = 204)
     @ApiResponses(value = { @ApiResponse(code = 204, message = "the user activated successfully") })
     @RequestMapping(value = "/activate/{activateKey}", method = RequestMethod.GET)
-    public Response activateAccoutn(@PathVariable(value = "activateKey") final String activateKey) {
+    public Response activateAccount(@PathVariable(value = "activateKey") final String activateKey) {
         final ActivateKey activateKeyObj = activateKeyRepository.findByKeySerial(activateKey);
         final User user = userRepository.findOne(activateKeyObj.getUser().getId());
-        user.setActive(true);
+        user.setActivated(true);
         userRepository.save(user);
         return Response.status(Status.NO_CONTENT).build();
     }

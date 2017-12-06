@@ -7,36 +7,36 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 public class UserAuthentication implements Authentication {
-    private final TokenUser driver;
+    private final TokenUser user;
     private boolean authenticated = true;
 
     public UserAuthentication(TokenUser user) {
-        this.driver = user;
+        this.user = user;
     }
 
     @Override
     public String getName() {
-        return driver.getUsername();
+        return user.getUsername();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return driver.getAuthorities();
+        return user.getAuthorities();
     }
 
     @Override
     public Object getCredentials() {
-        return driver.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public TokenUser getDetails() {
-        return driver;
+        return user;
     }
 
     @Override
     public Object getPrincipal() {
-        return driver.getUsername();
+        return user.getUsername();
     }
 
     @Override

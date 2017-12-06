@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.toptal.demo.repositories.LoginAttemptRepository;
+import com.toptal.demo.repositories.UserRepository;
 import com.toptal.demo.security.identity.TokenUtil;
 
 
@@ -23,6 +25,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private TokenUtil tokenUtil;
+
+    @Autowired
+    LoginAttemptRepository loginAttemptRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public void configure(final WebSecurity web) throws Exception {
@@ -45,11 +53,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Custom Token based authentication based on the header previously given to the client
         .addFilterBefore(new VerifyTokenFilter(tokenUtil), UsernamePasswordAuthenticationFilter.class)
         // custom JSON based authentication by POST of {"username":"<name>","password":"<password>"} which sets the token header upon authentication
-        .addFilterBefore(new GenerateTokenForUserFilter ("/authenticate", authenticationManager(), tokenUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new GenerateTokenForUserFilter("/authenticate", authenticationManager(), tokenUtil, loginAttemptRepository, userRepository),
+                        UsernamePasswordAuthenticationFilter.class)
         .authorizeRequests()
         .antMatchers( HttpMethod.POST,"/signup").permitAll()
                 .antMatchers(HttpMethod.GET, "/activate/*").permitAll()
         .antMatchers( HttpMethod.GET,"/users/getAll").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/users/reacivate_user").hasAnyRole("ADMIN", "MANAGER")
         .anyRequest().authenticated()
         ;
     }

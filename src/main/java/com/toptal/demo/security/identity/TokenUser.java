@@ -7,11 +7,17 @@ import com.toptal.demo.entities.User;
 
 
 public class TokenUser extends org.springframework.security.core.userdetails.User {
-	private User user;
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    private User user;
 
 	// For returning a normal user
 	public TokenUser(final User user) {
-        super(user.getEmail(), user.getPassword(), true, true, true, true,
+        super(user.getEmail(), user.getPassword(), user.getActivated(), true, true, !user.isBlocked(),
 		 AuthorityUtils.createAuthorityList(user.getRole().toString()));
 		this.user = user;
 		

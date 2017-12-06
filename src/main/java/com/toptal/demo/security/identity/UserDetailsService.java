@@ -23,8 +23,7 @@ public class UserDetailsService implements org.springframework.security.core.use
 
         final User user = userRepository.findOneByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
-		TokenUser currentUser;
-		currentUser = new TokenUser(user);
+        final TokenUser currentUser = new TokenUser(user);
 
 		detailsChecker.check(currentUser);
 		return currentUser;

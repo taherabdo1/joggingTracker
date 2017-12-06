@@ -4,8 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.toptal.demo.entities.ActivateKey;
 
-public interface ActivateKeyRepository  extends CrudRepository<ActivateKey, Long>
-{
+public interface ActivateKeyRepository extends CrudRepository<ActivateKey, Long> {
 
     public ActivateKey findByKeySerial(String keySerial);
 }

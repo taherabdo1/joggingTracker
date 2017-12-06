@@ -10,9 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.toptal.demo.entities.enums.Role;
 
 import lombok.AllArgsConstructor;
@@ -29,34 +31,38 @@ public class User {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-//	@Column(nullable = true)
-//	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//	private ZonedDateTime dateCreated = ZonedDateTime.now();
-
 	@Column(nullable = false)
 	@NotNull(message = "Username can not be null!")
 	private String email;
 
+	@JsonIgnore
 	@Column(nullable = false)
 	@NotNull(message = "Password can not be null!")
 	private String password;
 
+	private Location addressLocation;
+	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;
 
 	@Column(nullable = false)
-	private Boolean active = false;
+	private Boolean activated = false;
 
+    @Column(nullable = false)
+	private boolean isBlocked = false;
 	
 
-    //bi-directional many-to-one association to ActivateKey
-    @OneToMany(mappedBy="user")
-    private List<ActivateKey> activateKeys;
+    //bi-directional one-to-one association to ActivateKey
+    @OneToOne(mappedBy="user")
+    private ActivateKey activateKey;
 
     //bi-directional many-to-one association to Jogging
     @OneToMany(mappedBy="user")
     private List<Jogging> joggings;
+    
+    //bi-directional one-to-one association to loginAttempt
+    @OneToOne(mappedBy="user")
+    private LoginAttempt loginAttempt;
 }
 
