@@ -1,10 +1,7 @@
-package com.toptal.demo.entities;
+package com.toptal.demo.dto;
 
-import java.io.Serializable;
-import java.sql.Time;
 import java.util.Date;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,30 +9,22 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.toptal.demo.entities.Location;
 import com.toptal.demo.util.CustomDateDeserializer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * The persistent class for the jogging database table.
- */
-@Entity
+@JsonInclude(Include.NON_NULL)
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Jogging implements Serializable {
+@NoArgsConstructor
+public class JoggingReponseDto {
 
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Temporal(TemporalType.DATE)
@@ -57,13 +46,6 @@ public class Jogging implements Serializable {
     private String temperature;
 
     private String windSpeed;
-
-    // bi-directional many-to-one association to Location
-    @ManyToOne
-    private Location location;
-
-    @JsonIgnore
-    // bi-directional many-to-one association to User
-    @ManyToOne
-    private User user;
+    
+    private LocationDto location;
 }

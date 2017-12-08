@@ -8,49 +8,58 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 /**
  * The persistent class for the location database table.
- * 
  */
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(
+        name = "location",
+        uniqueConstraints = @UniqueConstraint(name = "uc_locationName", columnNames = {"locationName"})
+    )
 public class Location implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id;
+    private static final long serialVersionUID = 1L;
 
-	private float latitutde;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-	private String locationName;
+    private float latitutde;
 
-	private float longtude;
+    private float longtude;
 
-	//bi-directional many-to-one association to Jogging
-	@OneToMany(mappedBy="location")
-	private List<Jogging> joggings;
+    @NotNull
+    private String locationName;
 
-	public Jogging addJogging(final Jogging jogging) {
-		getJoggings().add(jogging);
-		jogging.setLocation(this);
+    // bi-directional many-to-one association to Jogging
+    @OneToMany(mappedBy = "location")
+    private List<Jogging> joggings;
 
-		return jogging;
-	}
+    public Jogging addJogging(final Jogging jogging) {
+        getJoggings().add(jogging);
+        jogging.setLocation(this);
 
-	public Jogging removeJogging(final Jogging jogging) {
-		getJoggings().remove(jogging);
-		jogging.setLocation(null);
+        return jogging;
+    }
 
-		return jogging;
-	}
+    public Jogging removeJogging(final Jogging jogging) {
+        getJoggings().remove(jogging);
+        jogging.setLocation(null);
+
+        return jogging;
+    }
 
 }

@@ -26,6 +26,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.toptal.demo.dto.UserDto;
 import com.toptal.demo.entities.LoginAttempt;
 import com.toptal.demo.entities.User;
 import com.toptal.demo.repositories.LoginAttemptRepository;
@@ -33,7 +34,6 @@ import com.toptal.demo.repositories.UserRepository;
 import com.toptal.demo.security.identity.TokenUser;
 import com.toptal.demo.security.identity.TokenUtil;
 import com.toptal.demo.security.response.session.OperationResponse.ResponseStatusEnum;
-import com.toptal.demo.security.response.UserDto;
 import com.toptal.demo.security.response.session.SessionResponse;
 
 import lombok.extern.slf4j.Slf4j;

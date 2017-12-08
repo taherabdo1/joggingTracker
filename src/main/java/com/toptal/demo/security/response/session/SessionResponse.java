@@ -1,7 +1,7 @@
 package com.toptal.demo.security.response.session;
 
 
-import com.toptal.demo.security.response.UserDto;
+import com.toptal.demo.dto.UserDto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

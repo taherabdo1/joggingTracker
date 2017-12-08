@@ -11,7 +11,7 @@ public class EmailService {
     @Autowired
     public JavaMailSender emailSender;
 
-    public void sendConfirmationMessage(final String to, final String subjsct, final String text) {
+    public void send(final String to, final String subjsct, final String text) {
         final SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subjsct);

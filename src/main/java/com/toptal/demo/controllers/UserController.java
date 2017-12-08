@@ -2,8 +2,7 @@ package com.toptal.demo.controllers;
 
 import java.util.List;
 
-import org.dozer.DozerBeanMapperSingletonWrapper;
-import org.dozer.Mapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.toptal.demo.dto.UserDto;
 import com.toptal.demo.entities.User;
 import com.toptal.demo.repositories.LoginAttemptRepository;
 import com.toptal.demo.repositories.UserRepository;
-import com.toptal.demo.security.response.UserDto;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -24,7 +23,9 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/users")
 public class UserController {
 
-    static Mapper mapper = DozerBeanMapperSingletonWrapper.getInstance();
+
+    @Autowired
+    ModelMapper modelMapper;
 
 	@Autowired
 	UserRepository userRepository;
@@ -37,7 +38,7 @@ public class UserController {
 		return "hello world";
 	}
 		
-    @GetMapping("/getAll")
+    @RequestMapping(value = "/getAll", method = RequestMethod.GET)
 	public List<User> getAllUsers(){
     	System.out.println("number of users : "+ userRepository.findAll().toString());
 		return (List<User>) userRepository.findAll();
@@ -55,7 +56,7 @@ public class UserController {
         loginAttemptRepository.save(userToReactivate.getLoginAttempt());
         final User reactivated = userRepository.save(userToReactivate);
 
-        final UserDto userDto = mapper.map(reactivated, UserDto.class);
+        final UserDto userDto = modelMapper.map(reactivated, UserDto.class);
 
         return userDto;
     }

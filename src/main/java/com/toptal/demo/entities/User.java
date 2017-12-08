@@ -40,7 +40,6 @@ public class User {
 	@NotNull(message = "Password can not be null!")
 	private String password;
 
-	private Location addressLocation;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -52,6 +51,8 @@ public class User {
     @Column(nullable = false)
 	private boolean isBlocked = false;
 	
+    @Column(nullable = true)
+    private String city;
 
     //bi-directional one-to-one association to ActivateKey
     @OneToOne(mappedBy="user")
@@ -64,5 +65,7 @@ public class User {
     //bi-directional one-to-one association to loginAttempt
     @OneToOne(mappedBy="user")
     private LoginAttempt loginAttempt;
+
+
 }
 

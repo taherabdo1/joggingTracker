@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.toptal.demo.dto.UserDto;
 import com.toptal.demo.entities.ActivateKey;
 import com.toptal.demo.entities.LoginAttempt;
 import com.toptal.demo.entities.User;
@@ -27,7 +28,6 @@ import com.toptal.demo.repositories.LoginAttemptRepository;
 import com.toptal.demo.repositories.UserRepository;
 import com.toptal.demo.security.request.Login;
 import com.toptal.demo.security.response.session.OperationResponse.ResponseStatusEnum;
-import com.toptal.demo.security.response.UserDto;
 import com.toptal.demo.security.response.session.SessionResponse;
 import com.toptal.demo.service.EmailService;
 
@@ -130,7 +130,7 @@ public class AuthenticationController {
             loginAttemptRepository.save(loginAttempt);
             // send mail to activate the account
             if (createdActivateKey.getId() != null) {
-                emailService.sendConfirmationMessage(createdUser.getEmail(), WELCOME_EMAIL_SUBJECT, buildVerificationMail(createdActivateKey.getKeySerial()));
+                emailService.send(createdUser.getEmail(), WELCOME_EMAIL_SUBJECT, buildVerificationMail(createdActivateKey.getKeySerial()));
             }
 
         } else {
