@@ -2,6 +2,8 @@ package com.toptal.demo.dto;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.NumberFormat;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,6 +20,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JoggingRequestDTO {
 
+    //to be used only with the update requests
+    @NumberFormat
+    @JsonProperty(value = "id", required = false)
+    private long id;
+    
     @JsonProperty(value = "date", required = true)
     @JsonDeserialize(using = CustomDateDeserializer.class)
     private Date date;
@@ -26,9 +33,9 @@ public class JoggingRequestDTO {
     @JsonProperty(value = "distance", required = false)
     private int distance;
 
-    // the time(period) to run
+    // the time(period) to run in minutes
     @JsonProperty(value = "time", required = true)
-    private float time;
+    private int time;
 
     @JsonProperty(value = "location", required = true)
     private LocationDto location;

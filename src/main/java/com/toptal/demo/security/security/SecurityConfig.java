@@ -40,7 +40,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             , "/*.html", "/**/*.html" ,"/**/*.css","/**/*.js","/**/*.png","/**/*.jpg", "/**/*.gif", "/**/*.svg", "/**/*.ico", "/**/*.ttf","/**/*.woff");
     }
 
-    //If Security is not working check application.properties if it is set to ignore
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http
@@ -50,15 +49,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .csrf().disable()
         // Add CORS Filter
         .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
-        // Custom Token based authentication based on the header previously given to the client
-        .addFilterBefore(new VerifyTokenFilter(tokenUtil), UsernamePasswordAuthenticationFilter.class)
-        // custom JSON based authentication by POST of {"username":"<name>","password":"<password>"} which sets the token header upon authentication
+                // custom JSON based authentication by POST of {"email":"<name>","password":"<password>"} which sets the
+                // token header upon authentication
                 .addFilterBefore(new GenerateTokenForUserFilter("/authenticate", authenticationManager(), tokenUtil, loginAttemptRepository, userRepository),
                         UsernamePasswordAuthenticationFilter.class)
+        // Custom Token based authentication based on the header previously given to the client
+        .addFilterBefore(new VerifyTokenFilter(tokenUtil), UsernamePasswordAuthenticationFilter.class)
         .authorizeRequests()
-        .antMatchers( HttpMethod.POST,"/signup").permitAll()
-                .antMatchers(HttpMethod.GET, "/joggings/add").hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.GET, "/activate/*").permitAll()
-        .antMatchers( HttpMethod.GET,"/users/getAll").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/signup").permitAll().antMatchers(HttpMethod.GET, "/activate/*").permitAll()
+                .antMatchers(HttpMethod.GET, "/joggings/add", "/joggings/get/{joggingId}", "/joggings/getAll").hasAnyRole("ADMIN", "USER")
+                .antMatchers(HttpMethod.DELETE, "/joggings/delete/{joggingId}").hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.PUT, "/joggings/update")
+                .hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.GET, "/users/getAll").hasAnyRole("ADMIN", "MANAGER")
+                .antMatchers(HttpMethod.GET, "/joggings/getAllForUser/{userEmail}").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/users/reacivate_user").hasAnyRole("ADMIN", "MANAGER")
         .anyRequest().authenticated()
         ;

@@ -18,7 +18,7 @@ public class CustomDateDeserializer extends JsonDeserializer<Date> {
         try {
             return format.parse(date);
         } catch (final ParseException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("there is validation error, please re-check the request body you sent");
         }
     }
 }

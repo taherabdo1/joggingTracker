@@ -1,7 +1,6 @@
 package com.toptal.demo.entities;
 
 import java.io.Serializable;
-import java.sql.Time;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -12,12 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.toptal.demo.util.CustomDateDeserializer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,16 +32,14 @@ public class Jogging implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Temporal(TemporalType.DATE)
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonDeserialize(using = CustomDateDeserializer.class)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     // the distance to run
     private int distance;
 
-    // the time(period) to run
-    private float time;
+    // the time(period) to run in minutes
+    private int time;
 
     /**
      *  weather related info, clouds, temperature, windSpead

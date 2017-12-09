@@ -1,11 +1,17 @@
 package com.toptal.demo;
 
 import java.util.Arrays;
+import java.util.Map;
+
+import javax.servlet.RequestDispatcher;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -30,6 +36,24 @@ public class ToptalApplication extends WebMvcConfigurerAdapter {
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
+    }
+
+    @Bean
+    public ErrorAttributes errorAttributes() {
+        return new DefaultErrorAttributes() {
+
+            @Override
+            public Map<String, Object> getErrorAttributes(final RequestAttributes requestAttributes, final boolean includeStackTrace) {
+                final Map<String, Object> errorAttributes = super.getErrorAttributes(requestAttributes, includeStackTrace);
+                final Object errorMessage = requestAttributes.getAttribute(RequestDispatcher.ERROR_MESSAGE, RequestAttributes.SCOPE_REQUEST);
+                if (errorMessage != null) {
+                    errorAttributes.put("message", errorMessage);
+                }
+                return errorAttributes;
+
+            }
+
+        };
     }
 
     @Bean

@@ -35,8 +35,8 @@ public class JoggingReponseDto {
     // the distance to run
     private int distance;
 
-    // the time(period) to run
-    private float time;
+    // the time(period) to run in minutes
+    private int time;
 
     /**
      *  weather related info, clouds, temperature, windSpead

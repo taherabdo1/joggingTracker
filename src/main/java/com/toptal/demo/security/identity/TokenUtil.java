@@ -1,6 +1,8 @@
 package com.toptal.demo.security.identity;
 
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Optional;
 
@@ -24,11 +26,13 @@ public class TokenUtil {
 
     private String secret="taherSecret123456_+$We";
 
-    public Optional<Authentication> verifyToken(final HttpServletRequest request) {
+    public Optional<Authentication> verifyToken(final HttpServletRequest request) throws UnsupportedEncodingException {
       final String token = request.getHeader(AUTH_HEADER_NAME);
 
-      if (token != null && !token.isEmpty()){
-        final TokenUser user = parseUserFromToken(token.replace("Bearer","").trim());
+      final String decoded = URLDecoder.decode(token, "UTF-8");
+
+        if (decoded != null && !token.isEmpty()) {
+            final TokenUser user = parseUserFromToken(decoded.replace("Bearer", "").trim());
         if (user != null) {
             return  Optional.of(new UserAuthentication(user));
         }
@@ -45,12 +49,12 @@ public class TokenUtil {
             .parseClaimsJws(token)
             .getBody();
 
-        final User driver= new User();
-        driver.setEmail((String) claims.get("email"));
-        driver.setId(Long.valueOf(claims.get("id").toString()));
-        driver.setRole(Role.valueOf((String)claims.get("role")));
-        driver.setPassword((String) claims.get("password"));
-        return new TokenUser(driver);
+        final User user= new User();
+        user.setEmail((String) claims.get("email"));
+        user.setId(Long.valueOf(claims.get("id").toString()));
+        user.setRole(Role.valueOf((String)claims.get("role")));
+        user.setPassword((String) claims.get("password"));
+        return new TokenUser(user);
     }
 
     public String createTokenForUser(final TokenUser tokenUser) {
