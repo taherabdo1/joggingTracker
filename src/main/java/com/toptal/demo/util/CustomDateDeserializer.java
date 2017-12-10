@@ -13,7 +13,7 @@ public class CustomDateDeserializer extends JsonDeserializer<Date> {
 
     @Override
     public Date deserialize(final JsonParser jsonparser, final DeserializationContext deserializationcontext) throws IOException {
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         final String date = jsonparser.getText();
         try {
             return format.parse(date);

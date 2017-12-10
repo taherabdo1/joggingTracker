@@ -2,18 +2,20 @@ package com.toptal.demo.controllers;
 
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
+import javax.ws.rs.core.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.toptal.demo.controllers.error.ToptalException;
 import com.toptal.demo.dto.UserDto;
-import com.toptal.demo.entities.User;
-import com.toptal.demo.repositories.LoginAttemptRepository;
-import com.toptal.demo.repositories.UserRepository;
+import com.toptal.demo.dto.UserRequestDto;
+import com.toptal.demo.service.UserService;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -23,41 +25,55 @@ import io.swagger.annotations.ApiResponses;
 @RequestMapping("/users")
 public class UserController {
 
-
     @Autowired
-    ModelMapper modelMapper;
-
-	@Autowired
-	UserRepository userRepository;
-	
-    @Autowired
-    LoginAttemptRepository loginAttemptRepository;
+    UserService userService;
 
     @GetMapping("/hello")
-	public String helloWorld(){
-		return "hello world";
-	}
-		
+    public String helloWorld() {
+        return "hello world";
+    }
+
+    @ApiOperation(value = "get all users", code = 200)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "get all the users") })
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
-	public List<User> getAllUsers(){
-    	System.out.println("number of users : "+ userRepository.findAll().toString());
-		return (List<User>) userRepository.findAll();
-	}
+    public List<UserDto> getAllUsers() {
+        return userService.getAll();
+    }
+
+    @ApiOperation(value = "get user by email", code = 200)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "get user by email") })
+    @RequestMapping(value = "/getByEmail/{userEmail}", method = RequestMethod.GET)
+    public UserDto getUserByEmail(@PathVariable(name = "userEmail") final String email) throws ToptalException {
+        return userService.getUserByemail(email);
+    }
+
+    @ApiOperation(value = "get user by ID", code = 200)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "get user by ID") })
+    @RequestMapping(value = "/getById/{ID}", method = RequestMethod.GET)
+    public UserDto getUserByID(@PathVariable(name = "ID") final long id) throws ToptalException {
+        return userService.getUserByID(id);
+    }
+
+    @ApiOperation(value = "delete user", code = 200)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "the user deleted successfully") })
+    @RequestMapping(value = "/delete/{ID}", method = RequestMethod.DELETE)
+    public Response deleteUserByID(@PathVariable(name = "ID") final long id) throws ToptalException {
+        userService.delete(id);
+        return Response.ok().build();
+    }
+
+    @ApiOperation(value = "update user", code = 200)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "the user updated successfully") })
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public UserDto updateUser(@RequestBody final UserRequestDto userDto) throws ToptalException {
+        return userService.update(userDto);
+    }
 
     @ApiOperation(value = "Re-activate the user", code = 204)
     @ApiResponses(value = { @ApiResponse(code = 204, message = "the user re-activated successfully") })
     @RequestMapping(value = "/reacivate_user/{userId}", method = RequestMethod.PUT)
     public UserDto reactivate(@PathVariable("userId") final Long userId) {
-
-        final User userToReactivate = userRepository.findOne(userId);
-        userToReactivate.getLoginAttempt().setNumberOfTrials(0);
-        userToReactivate.setBlocked(false);
-        // re-initialise the login trials for this user
-        loginAttemptRepository.save(userToReactivate.getLoginAttempt());
-        final User reactivated = userRepository.save(userToReactivate);
-
-        final UserDto userDto = modelMapper.map(reactivated, UserDto.class);
-
-        return userDto;
+        return userService.reactivate(userId);
     }
+
 }

@@ -13,6 +13,12 @@ public enum ToptalError {
     /** the jogging is not found*/
     JOGGING_NOT_FOUND(HttpStatus.NOT_FOUND, "there is no Jogging with such ID, maybe you deleted it before"),
 
+    /** the city is not found*/
+    CITY_NOT_FOUND(HttpStatus.NOT_FOUND, "this city is not found, we can't get the weather for it"),
+
+    /** the user is not found*/
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER with this email is not found in our system"),
+
     /** BAD Request*/
     JOGGING_VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "there is validation error, please re-check the request body you sent");
 

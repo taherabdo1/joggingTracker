@@ -29,7 +29,7 @@ import com.toptal.demo.repositories.UserRepository;
 import com.toptal.demo.security.request.Login;
 import com.toptal.demo.security.response.session.OperationResponse.ResponseStatusEnum;
 import com.toptal.demo.security.response.session.SessionResponse;
-import com.toptal.demo.service.EmailService;
+import com.toptal.demo.service.EmailServiceImpl;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,7 +50,7 @@ public class AuthenticationController {
     LoginAttemptRepository loginAttemptRepository;
 
     @Autowired
-    EmailService emailService;
+    EmailServiceImpl emailService;
 
     @Value("${running.host}")
     String hostName;

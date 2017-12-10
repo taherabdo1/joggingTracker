@@ -1,6 +1,11 @@
 package com.toptal.demo.dto;
 
+import java.sql.Time;
 import java.util.Date;
+
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.Valid;
 
 import org.springframework.format.annotation.NumberFormat;
 
@@ -24,18 +29,20 @@ public class JoggingRequestDTO {
     @NumberFormat
     @JsonProperty(value = "id", required = false)
     private long id;
-    
+
+    @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty(value = "date", required = true)
     @JsonDeserialize(using = CustomDateDeserializer.class)
+
     private Date date;
+
+    // the period to run in minutes
+    @JsonProperty(value = "periodInMinutes", required = true)
+    int periodInMinutes;
 
     // the distance to run
     @JsonProperty(value = "distance", required = false)
     private int distance;
-
-    // the time(period) to run in minutes
-    @JsonProperty(value = "time", required = true)
-    private int time;
 
     @JsonProperty(value = "location", required = true)
     private LocationDto location;

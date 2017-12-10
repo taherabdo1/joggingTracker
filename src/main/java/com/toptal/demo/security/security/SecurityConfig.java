@@ -59,9 +59,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/signup").permitAll().antMatchers(HttpMethod.GET, "/activate/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/joggings/add", "/joggings/get/{joggingId}", "/joggings/getAll").hasAnyRole("ADMIN", "USER")
                 .antMatchers(HttpMethod.DELETE, "/joggings/delete/{joggingId}").hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.PUT, "/joggings/update")
-                .hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.GET, "/users/getAll").hasAnyRole("ADMIN", "MANAGER")
+                .hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.GET, "/users/getAll", "/users/getByEmail/{userEmail}", "/users/getById/{ID}")
+                .hasAnyRole("ADMIN", "MANAGER")
                 .antMatchers(HttpMethod.GET, "/joggings/getAllForUser/{userEmail}").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/users/reacivate_user").hasAnyRole("ADMIN", "MANAGER")
+                .antMatchers(HttpMethod.PUT, "/users/reacivate_user", "/update").hasAnyRole("ADMIN", "MANAGER")
+                .antMatchers(HttpMethod.DELETE, "/users/delete/{ID}").hasAnyRole("ADMIN", "MANAGER")
+
         .anyRequest().authenticated()
         ;
     }
