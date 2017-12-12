@@ -12,10 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.toptal.demo.security.identity.TokenUtil;
+
+import io.jsonwebtoken.JwtException;
 
 /*
 This filter checks if there is a token in the Request service header and the token is not expired
@@ -26,16 +29,16 @@ public class VerifyTokenFilter extends GenericFilterBean {
     private final com.toptal.demo.security.identity.TokenUtil tokenUtil;
     //private AuthenticationFailureHandler loginFailureHandler = new SimpleUrlAuthenticationFailureHandler();
 
-    public VerifyTokenFilter(TokenUtil tokenUtil) {
+    public VerifyTokenFilter(final TokenUtil tokenUtil) {
         this.tokenUtil = tokenUtil;
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest  request  = (HttpServletRequest)  req;
-        HttpServletResponse response = (HttpServletResponse) res;
+    public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain filterChain) throws IOException, ServletException {
+        final HttpServletRequest  request  = (HttpServletRequest)  req;
+        final HttpServletResponse response = (HttpServletResponse) res;
         try {
-            Optional<Authentication> authentication = tokenUtil.verifyToken(request);
+            final Optional<Authentication> authentication = tokenUtil.verifyToken(request);
             if (authentication.isPresent()) {
               SecurityContextHolder.getContext().setAuthentication(authentication.get());
             }
@@ -43,16 +46,15 @@ public class VerifyTokenFilter extends GenericFilterBean {
               SecurityContextHolder.getContext().setAuthentication(null);
             }
             filterChain.doFilter(req, res);
-        }
-        catch (Exception e) {
+        } catch (final JwtException | AuthenticationException e) {
             SecurityContextHolder.getContext().setAuthentication(null);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         }
-        finally {
-//            SecurityContextHolder.getContext().setAuthentication(null);
-            return;  // always return void
-        }
+        // finally {
+        //// SecurityContextHolder.getContext().setAuthentication(null);
+        // return; // always return void
+        // }
     }
 
 }

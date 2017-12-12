@@ -74,10 +74,11 @@ public class GenerateTokenForUserFilter extends AbstractAuthenticationProcessing
     }
 
     @Override
-    protected void successfulAuthentication(final HttpServletRequest req, final HttpServletResponse res, final FilterChain chain, final Authentication authToken)
+    protected void successfulAuthentication(final HttpServletRequest req, final HttpServletResponse res, final FilterChain chain,
+            final Authentication authToken)
         throws IOException, ServletException {
         SecurityContextHolder.getContext().setAuthentication(authToken);
-     
+
         final TokenUser tokenUser = (TokenUser) authToken.getPrincipal();
         final SessionResponse resp = new SessionResponse();
         final UserDto respItem = new UserDto();
@@ -86,7 +87,7 @@ public class GenerateTokenForUserFilter extends AbstractAuthenticationProcessing
 
         respItem.setEmail(tokenUser.getUser().getEmail());
         respItem.setId(tokenUser.getUser().getId());
-        respItem.setRole(tokenUser.getUser().getRole().toString());
+        respItem.setRole(tokenUser.getUser().getRole());
         respItem.setToken(tokenString);
 
         resp.setOperationStatus(ResponseStatusEnum.SUCCESS);
@@ -103,23 +104,26 @@ public class GenerateTokenForUserFilter extends AbstractAuthenticationProcessing
 
     @Override
     protected void unsuccessfulAuthentication(final HttpServletRequest request, final HttpServletResponse response, final AuthenticationException failed)
-        throws IOException, ServletException {      
-        final User user = userRepository.findOneByEmail((String)request.getAttribute("email")).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        if(user.getLoginAttempt() == null){
-            final LoginAttempt newLoginAttempt = new LoginAttempt();
-            newLoginAttempt.setDate(new Date());
-            newLoginAttempt.setNumberOfTrials(1);
-            newLoginAttempt.setUser(user);
-            loginAttemptRepository.save(newLoginAttempt);
-        }else{
-            if(user.getLoginAttempt().getNumberOfTrials()+1 >= 3){
-                user.setBlocked(true);
+        throws IOException, ServletException {
+        final User user = userRepository.findOneByEmail((String) request.getAttribute("email")).orElse(null);
+        if (user != null) {
+
+            if (user.getLoginAttempt() == null) {
+                final LoginAttempt newLoginAttempt = new LoginAttempt();
+                newLoginAttempt.setDate(new Date());
+                newLoginAttempt.setNumberOfTrials(1);
+                newLoginAttempt.setUser(user);
+                loginAttemptRepository.save(newLoginAttempt);
+            } else {
+                if (user.getLoginAttempt().getNumberOfTrials() + 1 >= 3) {
+                    user.setBlocked(true);
+                }
+                user.getLoginAttempt().setNumberOfTrials(user.getLoginAttempt().getNumberOfTrials() + 1);
+                loginAttemptRepository.save(user.getLoginAttempt());
+                userRepository.save(user);
             }
-            user.getLoginAttempt().setNumberOfTrials(user.getLoginAttempt().getNumberOfTrials()+1);
-            loginAttemptRepository.save(user.getLoginAttempt());
-            userRepository.save(user);
         }
-      super.unsuccessfulAuthentication(request, response, failed);
+        super.unsuccessfulAuthentication(request, response, failed);
     }
 
     private Map<String, String> getEmailAndPasswordFromRequest(final HttpServletRequest request) {

@@ -4,6 +4,7 @@ package com.toptal.demo.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.toptal.demo.entities.Location;
+import com.toptal.demo.entities.enums.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,5 +21,5 @@ public class UserDto {
     private boolean activated = false;
     private boolean isBlocked = false;
     private String  email;
-    private String role;
+    private Role role;
 }

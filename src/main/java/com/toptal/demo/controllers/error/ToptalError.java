@@ -20,7 +20,16 @@ public enum ToptalError {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER with this email is not found in our system"),
 
     /** BAD Request*/
-    JOGGING_VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "there is validation error, please re-check the request body you sent");
+    JOGGING_VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "there is validation error, please re-check the request body you sent"),
+
+    /** page size less than or equal zero*/
+    JOGGING_VALIDATION_ERROR_PAGE_SIZE(HttpStatus.BAD_REQUEST, "page size must be more than 0"),
+
+    /** page size less than or equal zero*/
+    JOGGING_VALIDATION_ERROR_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "page number must be more than or equal 0"),
+
+    /** filter String is not balanced */
+    JOGGING_VALIDATION_ERROR_NOT_BALANCED_FILTER_STRING(HttpStatus.BAD_REQUEST,"filter string (parenthesis) is not balanced");
 
     /** The http status. */
     private HttpStatus httpStatus;

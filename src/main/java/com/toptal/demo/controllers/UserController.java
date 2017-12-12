@@ -2,6 +2,7 @@ package com.toptal.demo.controllers;
 
 import java.util.List;
 
+import javax.validation.constraints.Pattern;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.toptal.demo.controllers.error.ToptalException;
@@ -36,8 +38,11 @@ public class UserController {
     @ApiOperation(value = "get all users", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "get all the users") })
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
-    public List<UserDto> getAllUsers() {
-        return userService.getAll();
+    public List<UserDto> getAllUsers(
+            @Pattern(regexp = "[\\s]*[0-9]*[1-9]+", message = "size must be positive natual number ") @RequestParam(name = "size") final int pageSize,
+            @Pattern(regexp = "[\\s]*[0-9]*[1-9]+", message = "page number must be greater than or equal 0") @RequestParam(name = "pageNumber") final int pageNumer)
+        throws ToptalException {
+        return userService.getAll(pageSize, pageNumer);
     }
 
     @ApiOperation(value = "get user by email", code = 200)

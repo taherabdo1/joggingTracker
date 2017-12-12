@@ -109,7 +109,7 @@ public class AuthenticationController {
             resp.setOperationStatus(ResponseStatusEnum.SUCCESS);
             resp.setOperationMessage("User signed up successflly");
             final UserDto sessionItem = new UserDto();
-            sessionItem.setRole(createdUser.getRole().toString());
+            sessionItem.setRole(createdUser.getRole());
             sessionItem.setId(createdUser.getId());
             sessionItem.setEmail(createdUser.getEmail());
             resp.setItem(sessionItem);

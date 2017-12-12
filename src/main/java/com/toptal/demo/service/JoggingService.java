@@ -14,9 +14,10 @@ public interface JoggingService {
 
     public JoggingReponseDto update(final JoggingRequestDTO joggingRequestDTO) throws ToptalException;
 
-    public List<JoggingReponseDto> getAllForAuser(final String userEmail) throws ToptalException;
+    public List<JoggingReponseDto> getAllForAuser(final String userEmail, final int pageNumer, final int pageSize, final String filterBy)
+        throws ToptalException;
 
-    public List<JoggingReponseDto> getAll();
+    public List<JoggingReponseDto> getAll(final int pageNumber, final int pageSize, final String filterBy) throws ToptalException;
 
     public void deleteJogging(final Long id) throws ToptalException;
 

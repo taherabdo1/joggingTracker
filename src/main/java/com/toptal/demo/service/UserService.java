@@ -18,5 +18,5 @@ public interface UserService {
 
     UserDto update(UserRequestDto userDto) throws ToptalException;
 
-    List<UserDto> getAll();
+    List<UserDto> getAll(final int pageSize, final int pageNumber) throws ToptalException;
 }

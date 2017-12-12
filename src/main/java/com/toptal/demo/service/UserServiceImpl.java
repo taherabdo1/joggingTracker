@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -44,8 +47,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAll() {
-        final List<User> users = Lists.newArrayList(userRepository.findAll());
+    public List<UserDto> getAll(final int pageSize, final int pageNumer) throws ToptalException {
+        if (pageSize <= 0) {
+            throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_SIZE.buildException();
+        }
+        if (pageNumer < 0) {
+            throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_NUMBER.buildException();
+        }
+        final Pageable pageable = createPageRequest(pageSize, pageNumer);
+        final List<User> users = Lists.newArrayList(userRepository.findAll(pageable));
         final List<UserDto> resultList = new ArrayList<>();
         for (final User user : users) {
             resultList.add(modelMapper.map(user, UserDto.class));
@@ -97,5 +107,9 @@ public class UserServiceImpl implements UserService {
         userToSave = userRepository.save(userToSave);
         userToSave.getJoggings();
         return modelMapper.map(userToSave, UserDto.class);
+    }
+
+    private Pageable createPageRequest(final int pageSize, final int pageNumber) {
+        return new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "id");
     }
 }

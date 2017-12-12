@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.toptal.demo.controllers.error.ToptalException;
 import com.toptal.demo.dto.JoggingReponseDto;
 import com.toptal.demo.dto.JoggingRequestDTO;
 import com.toptal.demo.service.JoggingService;
+import com.toptal.demo.util.FilterStringValidator;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -37,7 +37,6 @@ public class JoggingController {
 
     @Autowired
     JoggingService joggingService;
-
 
     // static Mapper mapper = DozerBeanMapperSingletonWrapper.getInstance();
 
@@ -71,24 +70,30 @@ public class JoggingController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "get all the joggings for a user") })
     @RequestMapping(value = "/getAllForUser/{userEmail}", method = RequestMethod.GET)
     public List<JoggingReponseDto> getAllForAuser(
-            @Valid @Pattern(regexp = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$") @PathVariable(name = "userEmail") final String userEmail)
+            @Valid @Pattern(regexp = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$") @PathVariable(name = "userEmail") final String userEmail,
+            @RequestParam("page") final int page, @RequestParam("size") final int size,
+            @RequestParam(required = false, name = "filterBY") final String filterString)
         throws ToptalException {
-        return joggingService.getAllForAuser(userEmail);
+        return joggingService.getAllForAuser(userEmail, page, size, filterString);
     }
 
     @ApiOperation(value = "get All Jogging for the current user", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "get all the joggings for the current user") })
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
-    public List<JoggingReponseDto> getAll(@RequestParam("page") final int page, @RequestParam("size") final int size, final UriComponentsBuilder uriBuilder,
-            final HttpServletResponse response)
+    public List<JoggingReponseDto> getAll(@RequestParam("page") final int page, @RequestParam("size") final int size,
+            @RequestParam(required = false, name = "filterBY") final String filterString)
         throws ToptalException {
         List<JoggingReponseDto> joggingsList;
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         final String email = auth.getName(); // get logged in userEmail
+        // validate the string input for filteration, it will throw {Toptal Exception} if not valid
+        // if valid it will return an updated version of the string to be filter by
+        final String where = FilterStringValidator.validateAndConvert(filterString);
+
         if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-            joggingsList = joggingService.getAll();
+            joggingsList = joggingService.getAll(page, size, where);
         } else {
-            joggingsList = joggingService.getAllForAuser(email);
+            joggingsList = joggingService.getAllForAuser(email, page, size, where);
         }
         return joggingsList;
     }

@@ -1,11 +1,9 @@
 package com.toptal.demo.dto;
 
-import java.sql.Time;
 import java.util.Date;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.Valid;
 
 import org.springframework.format.annotation.NumberFormat;
 
@@ -15,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.toptal.demo.util.CustomDateDeserializer;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,6 +33,7 @@ public class JoggingRequestDTO {
     @JsonProperty(value = "date", required = true)
     @JsonDeserialize(using = CustomDateDeserializer.class)
 
+    @ApiModelProperty(value = "YYYY-MM-DD, e.g. 2015-01-16")
     private Date date;
 
     // the period to run in minutes
@@ -46,4 +46,5 @@ public class JoggingRequestDTO {
 
     @JsonProperty(value = "location", required = true)
     private LocationDto location;
+    
 }

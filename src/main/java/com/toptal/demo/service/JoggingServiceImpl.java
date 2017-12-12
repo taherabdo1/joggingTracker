@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -57,7 +60,10 @@ public class JoggingServiceImpl implements JoggingService {
         weatherService.getWeather(jogging);
 
         // get all joggings to check for overlaps
-        final List<Jogging> all = joggingRepository.findByUserEmail(user.getEmail());
+        final Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
+
+        final List<Jogging> all = joggingRepository.findByUserEmail(user.getEmail(), pageRequest);
+        // all = getPage(pageRequest, all);
         final Calendar calendar = Calendar.getInstance();
         for (final Jogging run : all) {
             calendar.setTimeInMillis(run.getDate().getTime());
@@ -98,13 +104,12 @@ public class JoggingServiceImpl implements JoggingService {
         jogging.setUser(user);
         jogging.setLocation(location);
 
-        // if a new location is set
-        if (!jogging.getLocation().getLocationName().equalsIgnoreCase(selected.getLocation().getLocationName())) {
-            weatherService.getWeather(jogging);
-        }
+        weatherService.getWeather(jogging);
 
-        // get all joggings to check for overlaps
-        final List<Jogging> all = joggingRepository.findByUserEmail(user.getEmail());
+        final Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
+
+        final List<Jogging> all = joggingRepository.findByUserEmail(user.getEmail(), pageRequest);
+
         final Calendar calendar = Calendar.getInstance();
         for (final Jogging run : all) {
             calendar.setTimeInMillis(run.getDate().getTime());
@@ -125,8 +130,17 @@ public class JoggingServiceImpl implements JoggingService {
     }
 
     @Override
-    public List<JoggingReponseDto> getAllForAuser(final String userEmail) throws ToptalException {
-        final List<Jogging> joggingsList = joggingRepository.findByUserEmail(userEmail);
+    public List<JoggingReponseDto> getAllForAuser(final String userEmail, final int pageNumber, final int pageSize, final String filterBy)
+        throws ToptalException {
+        if (pageSize <= 0) {
+            throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_SIZE.buildException();
+        }
+        if (pageNumber < 0) {
+            throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_NUMBER.buildException();
+        }
+        final Pageable pageRequest = createPageRequest(pageSize, pageNumber);
+        final List<Jogging> joggingsList = joggingRepository.findByUserEmail(userEmail, pageRequest);
+        // joggingsList = getPage(pageRequest, joggingsList);
         final List<JoggingReponseDto> response = new ArrayList<>();
         for (final Jogging jogging : joggingsList) {
             response.add(modelMapper.map(jogging, JoggingReponseDto.class));
@@ -135,9 +149,18 @@ public class JoggingServiceImpl implements JoggingService {
     }
 
     @Override
-    public List<JoggingReponseDto> getAll() {
+    public List<JoggingReponseDto> getAll(final int pageNumber, final int pageSize, final String filterBy) throws ToptalException {
+        if (pageSize <= 0) {
+            throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_SIZE.buildException();
+        }
+        if (pageNumber < 0) {
+            throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_NUMBER.buildException();
+        }
+        final Pageable pageRequest = createPageRequest(pageSize, pageNumber);
         final List<JoggingReponseDto> responseData = new ArrayList<>();
-        final List<Jogging> joggingsList = Lists.newArrayList(joggingRepository.findAll());
+
+        List<Jogging> joggingsList = Lists.newArrayList(joggingRepository.findAll(pageRequest));
+        joggingsList = getPage(pageRequest, joggingsList);
         for (final Jogging jogging : joggingsList) {
             responseData.add(modelMapper.map(jogging, JoggingReponseDto.class));
         }
@@ -151,6 +174,24 @@ public class JoggingServiceImpl implements JoggingService {
             throw ToptalError.JOGGING_NOT_FOUND.buildException();
         }
         joggingRepository.delete(selected);
+    }
+
+    private Pageable createPageRequest(final int pageSize, final int pageNumber) {
+        return new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "id");
+    }
+
+    private List<Jogging> getPage(final Pageable pageable, final List<Jogging> jogs) {
+        final int lowerLimit = 0;
+        int upperLimit = 0;
+        if ((pageable.getPageNumber() + 1) * pageable.getPageSize() > jogs.size()) {
+            upperLimit = jogs.size();
+        }
+        if (pageable.getPageNumber() * pageable.getPageSize() > jogs.size()) {
+            return new ArrayList();
+        }
+        List<Jogging> returnJogs = null;
+        returnJogs = jogs.subList(lowerLimit, upperLimit);
+        return returnJogs;
     }
 
 }
