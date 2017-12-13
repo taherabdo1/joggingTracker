@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.toptal.demo.util.CustomDateDeserializer;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -47,4 +48,7 @@ public class JoggingReponseDto {
     private String windSpeed;
     
     private LocationDto location;
+    
+    @ApiModelProperty(notes="speed in KM/h")
+    private double speed;
 }

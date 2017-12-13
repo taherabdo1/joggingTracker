@@ -29,8 +29,15 @@ public enum ToptalError {
     JOGGING_VALIDATION_ERROR_PAGE_NUMBER(HttpStatus.BAD_REQUEST, "page number must be more than or equal 0"),
 
     /** filter String is not balanced */
-    JOGGING_VALIDATION_ERROR_NOT_BALANCED_FILTER_STRING(HttpStatus.BAD_REQUEST,"filter string (parenthesis) is not balanced");
+    JOGGING_VALIDATION_ERROR_NOT_BALANCED_FILTER_STRING(HttpStatus.BAD_REQUEST,"filter string (parenthesis) is not balanced"),
 
+    /** filter String is not balanced */
+    JOGGING_VALIDATION_ERROR_NOT_BAD_REPORT_REQUEST_DATA(HttpStatus.BAD_REQUEST, "bad data for generating a report"),
+
+    /** the user doesn't have jogs while he/she want the max ran diatance date*/
+    JOGGING_NO_JOGS_FOR_CURRENT_USER(HttpStatus.NO_CONTENT, "Current user doesn'h have jofgs till now");
+
+    
     /** The http status. */
     private HttpStatus httpStatus;
 

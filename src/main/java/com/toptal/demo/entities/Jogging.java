@@ -41,7 +41,7 @@ public class Jogging implements Serializable {
     
     // the distance to run
     private int distance;
-
+    
     /**
      *  weather related info, clouds, temperature, windSpead
      */
