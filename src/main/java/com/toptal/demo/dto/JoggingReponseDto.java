@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,9 +27,10 @@ public class JoggingReponseDto {
     @JsonProperty(value = "id")
     private Long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty(value = "date", required = true)
-    @JsonDeserialize(using = CustomDateDeserializer.class)
+//    @JsonDeserialize(using = CustomDateDeserializer.class)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date date;
 
     // the period to run in minutes

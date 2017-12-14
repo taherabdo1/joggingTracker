@@ -1,5 +1,6 @@
 package com.toptal.demo.service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,8 +53,9 @@ public class ReportServiceImpl implements ReportService {
             totalDistance += jogs.get(i).getDistance();
         }
         if (jogs.size() != 0) {
-            response.setDistance(totalDistance / jogs.size());
-            response.setSpeed(totalSpeeds / speeds.size());
+            final DecimalFormat df = new DecimalFormat("####.##");
+            response.setDistance(Double.parseDouble(df.format((double) totalDistance / jogs.size() / 1000)));
+            response.setSpeed(Double.parseDouble(df.format(totalSpeeds / speeds.size())));
         }
         response.setStartOfWeek(startDate);
 
@@ -130,11 +132,11 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public double getTotalTimeRunning(final String email) throws ToptalException {
-        final Object result = jogRepository.getSumTimeForAUser(email) / 60;// in hours
+        final Double result = jogRepository.getSumTimeForAUser(email);// in hours
         if (result == null) {
             return 0;
         }
-        return (Double) result;
+        return result / 60;
     }
 
 }

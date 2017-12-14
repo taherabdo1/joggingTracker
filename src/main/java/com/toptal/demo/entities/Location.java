@@ -3,6 +3,7 @@ package com.toptal.demo.entities;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,10 +24,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(
-        name = "location",
-        uniqueConstraints = @UniqueConstraint(name = "uc_locationName", columnNames = {"locationName"})
-    )
+@Table(name = "location", uniqueConstraints = @UniqueConstraint(name = "uc_locationName", columnNames = { "locationName" }))
 public class Location implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,12 +32,14 @@ public class Location implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
+    @Column(nullable = true)
     private float latitutde;
-    
+
+    @Column(nullable = true)
     private float longtude;
 
-    @NotNull
+    @Column(nullable = false)
     private String locationName;
 
     // bi-directional many-to-one association to Jogging

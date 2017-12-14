@@ -168,12 +168,13 @@ public class JoggingServiceImpl implements JoggingService {
     }
 
     @Override
-    public void deleteJogging(final Long id) throws ToptalException {
+    public boolean deleteJogging(final Long id) throws ToptalException {
         final Jogging selected = joggingRepository.findOne(id);
         if (selected == null) {
             throw ToptalError.JOGGING_NOT_FOUND.buildException();
         }
         joggingRepository.delete(selected);
+        return true;
     }
 
     private Pageable createPageRequest(final int pageSize, final int pageNumber) {

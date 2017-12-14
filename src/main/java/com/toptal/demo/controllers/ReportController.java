@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping("/report")
+@RequestMapping("/reports")
 public class ReportController {
 
     @Autowired
@@ -70,21 +70,19 @@ public class ReportController {
 
     // @ApiOperation(value = "comparison of the previous and last week", code = 200)
     // @ApiResponses(value = { @ApiResponse(code = 200, message = "comparison of the previous and last week") })
-    // @RequestMapping(value = "/getDayWithTheGreatestDistanceRan", method = RequestMethod.GET)
-    // public String getDayWithTheGreatestDistanceRan() throws ToptalException {
+    // @RequestMapping(value = "/compareLastTwoWeeks", method = RequestMethod.GET)
+    // public String compareLastTwoWeeks() throws ToptalException {
     // final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     // final String email = auth.getName(); // get logged in userEmail
-    // final Date response = reportService.getTheDayWithTheGreatestDistance(email);
+    // final Date response = reportService.compareLastTwoWeeks(email);
     // final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     //
     // return simpleDateFormat.format(response);
     // }
-    //
+
     /**
      * the total time spent jogging
      */
-
-
     @ApiOperation(value = "get the total time spent jogging", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "the total time spent jogging") })
     @RequestMapping(value = "/gettotalTimeSpentJogging", method = RequestMethod.GET)

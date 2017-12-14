@@ -73,7 +73,7 @@ public class UserControllerTest {
 
     @Test
     public void testGetUserByID() throws ToptalException {
-        final UserDto user = new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER);
+        final UserDto user = new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER, 20, "test user full name");
         doReturn(user).when(userService).getUserByID(anyLong());
         final UserDto userDto = userController.getUserByID(ID);
         assertEquals(userDto.getEmail(), user.getEmail());
@@ -89,7 +89,7 @@ public class UserControllerTest {
 
     @Test
     public void testDeleteUser() throws ToptalException {
-        new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER);
+        new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER, 20, "test user full name");
         userController.deleteUserByID(ID);
         verify(userService).delete(ID);
     }
@@ -104,7 +104,7 @@ public class UserControllerTest {
     @Test
     public void testUpdateUser() throws ToptalException {
         final UserRequestDto userRequestDto = new UserRequestDto("cairo", true, false, "user1@test.com", Role.ROLE_USER);
-        final UserDto userDto = new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER);
+        final UserDto userDto = new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER, 20, "test user full name");
         doReturn(userDto).when(userService).update(userRequestDto);
         final UserDto returnedUserDto = userController.updateUser(userRequestDto);
         assertEquals(returnedUserDto.getEmail(), userRequestDto.getEmail());
@@ -134,9 +134,9 @@ public class UserControllerTest {
 
     private List<UserDto> getUsersList() {
         final List<UserDto> usersList = new ArrayList<>();
-        usersList.add(new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER));
-        usersList.add(new UserDto(2L, "token", "giza", true, false, "user2@test.com", Role.ROLE_MANAGER));
-        usersList.add(new UserDto(3L, "token", "london", true, false, "user3@test.com", Role.ROLE_ADMIN));
+        usersList.add(new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER, 20, "test user full name"));
+        usersList.add(new UserDto(2L, "token", "giza", true, false, "user2@test.com", Role.ROLE_MANAGER, 20, "test user full name"));
+        usersList.add(new UserDto(3L, "token", "london", true, false, "user3@test.com", Role.ROLE_ADMIN, 20, "test user full name"));
         return usersList;
     }
 }

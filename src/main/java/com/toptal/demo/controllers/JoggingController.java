@@ -1,19 +1,15 @@
 package com.toptal.demo.controllers;
 
-import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +43,7 @@ public class JoggingController {
 
         // get the current user
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        final String email = auth.getName(); // get logged in username
+        final String email = auth.getName(); // get logged in email
         final JoggingReponseDto reponseDto = joggingService.addNewJogging(joggingRequestDTO, email);
         return reponseDto;
     }
@@ -104,11 +100,6 @@ public class JoggingController {
     public Response deleteJogging(@PathVariable("joggingId") final Long id) throws ToptalException {
         joggingService.deleteJogging(id);
         return Response.ok().build();
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    void handleBadRequests(final HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.BAD_REQUEST.value(), "Please try again and with a non empty string as 'name'");
     }
 
 }

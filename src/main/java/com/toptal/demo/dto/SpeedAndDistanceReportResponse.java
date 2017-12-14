@@ -19,9 +19,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SpeedAndDistanceReportResponse {
 
-    @JsonProperty(value = "average_distance")
-    private int distance;
+    @ApiModelProperty(notes="distance in KM")
+    @JsonProperty(value = "average_distance_per_day")
+    private double distance;
 
+    @ApiModelProperty(notes="speed in KM/h")
     @JsonProperty(value = "average_speed")
     private double speed;
 

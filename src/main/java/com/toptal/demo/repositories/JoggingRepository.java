@@ -21,6 +21,6 @@ public interface JoggingRepository extends PagingAndSortingRepository<Jogging, L
     List<Object[]> getMaxDistanceDateForAUser(@Param("email") final String email);
 
     @Query(nativeQuery = true, value = "select coalesce(sum(period_in_minutes), 0) from jogging inner join user where user.id = jogging.user_id and user.email = :email group by user.id")
-    double getSumTimeForAUser(@Param("email") final String email);
+    Double getSumTimeForAUser(@Param("email") final String email);
 
 }

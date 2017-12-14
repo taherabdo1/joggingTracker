@@ -19,6 +19,6 @@ public interface JoggingService {
 
     public List<JoggingReponseDto> getAll(final int pageNumber, final int pageSize, final String filterBy) throws ToptalException;
 
-    public void deleteJogging(final Long id) throws ToptalException;
+    public boolean deleteJogging(final Long id) throws ToptalException;
 
 }

@@ -51,13 +51,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
                 // custom JSON based authentication by POST of {"email":"<name>","password":"<password>"} which sets the
                 // token header upon authentication
-                .addFilterBefore(new GenerateTokenForUserFilter("/authenticate", authenticationManager(), tokenUtil, loginAttemptRepository, userRepository),
-                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new GenerateTokenForUserFilter("/authenticate", authenticationManager(), tokenUtil, loginAttemptRepository, userRepository),UsernamePasswordAuthenticationFilter.class)
         // Custom Token based authentication based on the header previously given to the client
-        .addFilterBefore(new VerifyTokenFilter(tokenUtil), UsernamePasswordAuthenticationFilter.class)
-        .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/signup").permitAll().antMatchers(HttpMethod.GET, "/activate/*").permitAll()
-                .antMatchers(HttpMethod.POST, "/joggings/add").hasAnyRole("ADMIN", "USER")
+        .addFilterBefore(new VerifyTokenFilter(tokenUtil), UsernamePasswordAuthenticationFilter.class).authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/activate/*").permitAll()
+                .antMatchers(HttpMethod.POST, "/signup").permitAll()
+                .antMatchers(HttpMethod.POST, "/joggings/add", "/reports/averageSpeedAndDistancePerWeek", "/reports/getFastestSlowestRun",
+                        "/reports/getDayWithTheGreatestDistanceRan", "/reports/gettotalTimeSpentJogging")
+                .hasAnyRole("ADMIN", "USER")
                 .antMatchers(HttpMethod.GET, "/joggings/get/{joggingId}", "/joggings/getAll").hasAnyRole("ADMIN", "USER")
                 .antMatchers(HttpMethod.DELETE, "/joggings/delete/{joggingId}").hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.PUT, "/joggings/update")
                 .hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.GET, "/users/getAll", "/users/getByEmail/{userEmail}", "/users/getById/{ID}")
@@ -65,9 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/joggings/getAllForUser/{userEmail}").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/users/reacivate_user", "/update").hasAnyRole("ADMIN", "MANAGER")
                 .antMatchers(HttpMethod.DELETE, "/users/delete/{ID}").hasAnyRole("ADMIN", "MANAGER")
-
-        .anyRequest().authenticated()
-        ;
+                .anyRequest().authenticated();
     }
 
     /*

@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.toptal.demo.entities.enums.Role;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,11 @@ public class User {
 	@NotNull(message = "Password can not be null!")
 	private String password;
 
+    @Column(nullable = true)
+    private int age;
+
+    @Column(nullable = true)
+    private String fullName;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)

@@ -35,7 +35,10 @@ public enum ToptalError {
     JOGGING_VALIDATION_ERROR_NOT_BAD_REPORT_REQUEST_DATA(HttpStatus.BAD_REQUEST, "bad data for generating a report"),
 
     /** the user doesn't have jogs while he/she want the max ran diatance date*/
-    JOGGING_NO_JOGS_FOR_CURRENT_USER(HttpStatus.NO_CONTENT, "Current user doesn'h have jofgs till now");
+    JOGGING_NO_JOGS_FOR_CURRENT_USER(HttpStatus.NO_CONTENT, "Current user doesn'h have jofgs till now"),
+
+    /** the sent Activation Key is not correct */
+    USER_ACTIVATION_KEY_ERROR(HttpStatus.BAD_REQUEST, "the sent Activation Key is not correct");
 
     
     /** The http status. */
