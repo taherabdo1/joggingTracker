@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.toptal.demo.controllers.error.ToptalError;
 import com.toptal.demo.controllers.error.ToptalException;
+import com.toptal.demo.controllers.filtter.CriteriaParser;
+import com.toptal.demo.controllers.filtter.JogSpecification;
 import com.toptal.demo.dto.JoggingReponseDto;
 import com.toptal.demo.dto.JoggingRequestDTO;
 import com.toptal.demo.entities.Jogging;
@@ -138,6 +140,9 @@ public class JoggingServiceImpl implements JoggingService {
         if (pageNumber < 0) {
             throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_NUMBER.buildException();
         }
+        final List<Object> conditions = CriteriaParser.parse(filterBy);
+        final JogSpecification jogSpecification = new JogSpecification();
+        jogSpecification.getJogSpecification(conditions);
         final Pageable pageRequest = createPageRequest(pageSize, pageNumber);
         final List<Jogging> joggingsList = joggingRepository.findByUserEmail(userEmail, pageRequest);
         // joggingsList = getPage(pageRequest, joggingsList);

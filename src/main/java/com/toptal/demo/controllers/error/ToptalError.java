@@ -38,7 +38,10 @@ public enum ToptalError {
     JOGGING_NO_JOGS_FOR_CURRENT_USER(HttpStatus.NO_CONTENT, "Current user doesn'h have jofgs till now"),
 
     /** the sent Activation Key is not correct */
-    USER_ACTIVATION_KEY_ERROR(HttpStatus.BAD_REQUEST, "the sent Activation Key is not correct");
+    USER_ACTIVATION_KEY_ERROR(HttpStatus.BAD_REQUEST, "the sent Activation Key is not correct"),
+
+    /** the sent Activation Key is not correct */
+    REPORT_DATES_ERROR_END_DATE_CANT_BE_BEFORE_START_DATE(HttpStatus.BAD_REQUEST, "start date should be before end date");
 
     
     /** The http status. */

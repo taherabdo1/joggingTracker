@@ -47,7 +47,6 @@ public class AuthenicationServiceTest {
     public void testSignup() throws ToptalException {
         // doReturn(user).when(userRepository).save(any(User.class));
         // doReturn(new ActivateKey(1L, "key", user)).when(activateKeyRepository).save(any(ActivateKey.class));
-        // // doReturn(user).when(modelMapper).map(any(UserSignUpDto.class), any(User.class));
         // authenticationService.signup(userInfo);
 
     }

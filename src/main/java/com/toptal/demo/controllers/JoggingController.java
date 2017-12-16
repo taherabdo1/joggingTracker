@@ -34,12 +34,10 @@ public class JoggingController {
     @Autowired
     JoggingService joggingService;
 
-    // static Mapper mapper = DozerBeanMapperSingletonWrapper.getInstance();
-
     @ApiOperation(value = "create new jogging", code = 201)
     @ApiResponses(value = { @ApiResponse(code = 201, message = "the jogging created successfully") })
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public JoggingReponseDto addNewJogging(@RequestBody final JoggingRequestDTO joggingRequestDTO) throws ToptalException {
+    public JoggingReponseDto addNewJogging(@Valid @RequestBody final JoggingRequestDTO joggingRequestDTO) throws ToptalException {
 
         // get the current user
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -58,7 +56,7 @@ public class JoggingController {
     @ApiOperation(value = "update pre-existing jogging", code = 201)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "the jogging updated successfully") })
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public JoggingReponseDto update(@RequestBody final JoggingRequestDTO joggingRequestDTO) throws ToptalException {
+    public JoggingReponseDto update(@Valid @RequestBody final JoggingRequestDTO joggingRequestDTO) throws ToptalException {
         return joggingService.update(joggingRequestDTO);
     }
 

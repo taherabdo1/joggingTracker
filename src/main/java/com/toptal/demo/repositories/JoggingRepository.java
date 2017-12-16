@@ -15,9 +15,11 @@ public interface JoggingRepository extends PagingAndSortingRepository<Jogging, L
 //    @Query(nativeQuery = true, value = "Select From Jogging where j.email = :email")
     List<Jogging> findByUserEmail(@Param("email") final String email, Pageable pageReguest);
 
+    List<Jogging> findByUserEmailAndDateAfterAndDateBeforeOrderByDate(final String email, final Date startDate, final Date endDate);
+
     List<Jogging> findByUserEmailAndDateAfterAndDateBefore(final String email, final Date startDate, final Date endDate);
 
-    @Query(nativeQuery = true, value = "select date , max(distance) from jogging, user where user.id = jogging.user_id and user.email = :email")
+    @Query(nativeQuery = true, value = "select j.date, j.distance from user u inner join jogging j on u.id = j.user_id where u.email = :email order by j.distance desc limit 1")
     List<Object[]> getMaxDistanceDateForAUser(@Param("email") final String email);
 
     @Query(nativeQuery = true, value = "select coalesce(sum(period_in_minutes), 0) from jogging inner join user where user.id = jogging.user_id and user.email = :email group by user.id")

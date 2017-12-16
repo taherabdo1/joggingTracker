@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Min;
 
 import org.springframework.format.annotation.NumberFormat;
 
@@ -31,17 +32,18 @@ public class JoggingRequestDTO {
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonProperty(value = "date", required = true)
-    @JsonDeserialize(using = CustomDateDeserializer.class)
-
+    @JsonDeserialize(using = CustomDateDeserializer.class)    
     @ApiModelProperty(value = "YYYY-MM-DD, e.g. 2015-01-16")
     private Date date;
 
     // the period to run in minutes
+    @Min(message="can't be less than zero", value = 10)
     @JsonProperty(value = "periodInMinutes", required = true)
     int periodInMinutes;
 
     // the distance to run
     @JsonProperty(value = "distance", required = false)
+    @Min(message="can't be less than zero", value = 1000)
     private int distance;
 
     @JsonProperty(value = "location", required = true)

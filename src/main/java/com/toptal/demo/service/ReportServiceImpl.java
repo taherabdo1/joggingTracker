@@ -25,42 +25,139 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     ModelMapper modelMapper;
-    @Override
-    public SpeedAndDistanceReportResponse getAgvSpeedAndDistanceForWeek(final String userEmail, Date startDate) {
-        final SpeedAndDistanceReportResponse response = new SpeedAndDistanceReportResponse();
-        // if the start date is not given then get the last week
-        final Calendar calendar = Calendar.getInstance();
-        Date endDate = null;
-        if (startDate == null) {
-            endDate = new Date();
-            calendar.setTime(endDate);
-            calendar.add(Calendar.DAY_OF_YEAR, -7);
-            startDate = calendar.getTime();
-        } else {
-            calendar.setTime(startDate);
-            calendar.add(Calendar.DAY_OF_YEAR, 7);
-            endDate = calendar.getTime();
-        }
-        final List<Jogging> jogs = jogRepository.findByUserEmailAndDateAfterAndDateBefore(userEmail, startDate, endDate);
-        final List<Double> speeds = new ArrayList<>();
-        for (final Jogging jog : jogs) {
-            speeds.add(jog.getDistance() / 1000.000 / (jog.getPeriodInMinutes() / 60.000));// get the speed in KM/hour
-        }
-        float totalSpeeds = 0f;
-        int totalDistance = 0;
-        for (int i = 0; i < speeds.size(); i++) {
-            totalSpeeds += speeds.get(i);
-            totalDistance += jogs.get(i).getDistance();
-        }
-        if (jogs.size() != 0) {
-            final DecimalFormat df = new DecimalFormat("####.##");
-            response.setDistance(Double.parseDouble(df.format((double) totalDistance / jogs.size() / 1000)));
-            response.setSpeed(Double.parseDouble(df.format(totalSpeeds / speeds.size())));
-        }
-        response.setStartOfWeek(startDate);
 
+    @Override
+    public List<SpeedAndDistanceReportResponse> getAgvSpeedAndDistanceForWeek(final String userEmail, final Date startDate, final Date endDate) {
+
+        final List<Jogging> jogs = jogRepository.findByUserEmailAndDateAfterAndDateBeforeOrderByDate(userEmail, startDate, endDate);
+
+        final List<SpeedAndDistanceReportResponse> response = new ArrayList<>();
+
+        final Calendar startCalendar = Calendar.getInstance();
+        Calendar currentWeekStartCalendar = Calendar.getInstance();
+        startCalendar.setTime(startDate);
+        currentWeekStartCalendar = startCalendar;
+        final Calendar endOfWeek = (Calendar) currentWeekStartCalendar.clone();
+        if (startCalendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+            endOfWeek.add(Calendar.DATE, 8 - startCalendar.get(Calendar.DAY_OF_WEEK));
+        } else {
+            endOfWeek.add(Calendar.DATE, 7);
+
+        }
+
+        List<Jogging> currentWeekJogs = new ArrayList<>();
+        for (int i = 0; i < jogs.size(); i++) {
+            //get the jogs of the current week
+            if (jogs.get(i).getDate().after(currentWeekStartCalendar.getTime()) && jogs.get(i).getDate().before(endOfWeek.getTime())) {
+                currentWeekJogs.add(jogs.get(i));
+                continue;
+            } else if (jogs.get(i).getDate().after(endOfWeek.getTime())) {
+                //save the current week and initialise the next week
+                final List<Double> speeds = new ArrayList<>();
+                    for (final Jogging jog : currentWeekJogs) {
+                        speeds.add(jog.getDistance() / 1000.000 / (jog.getPeriodInMinutes() / 60.000));// get the speed
+                                                                                                       // in KM/hour
+                    }
+                    float totalSpeeds = 0f;
+                    int totalDistance = 0;
+                    for (int j = 0; j < speeds.size(); j++) {
+                        totalSpeeds += speeds.get(j);
+                        totalDistance += currentWeekJogs.get(j).getDistance();
+                    }
+                    SpeedAndDistanceReportResponse currentWeekReport = new SpeedAndDistanceReportResponse();
+                    if (currentWeekJogs.size() != 0) {
+                        final DecimalFormat df = new DecimalFormat("####.##");
+                        currentWeekReport.setDistance(Double.parseDouble(df.format((double) totalDistance / currentWeekJogs.size() / 1000)));
+                        currentWeekReport.setSpeed(Double.parseDouble(df.format(totalSpeeds / speeds.size())));
+                    }
+                    currentWeekReport.setStartOfWeek(currentWeekStartCalendar.getTime());
+                    currentWeekReport.setEndOfWeek(endOfWeek.getTime());
+                    response.add(currentWeekReport);
+                    currentWeekReport = new SpeedAndDistanceReportResponse();
+
+                    // re-intialize
+                currentWeekStartCalendar.setTime(endOfWeek.getTime());
+                // currentWeekStartCalendar.add(Calendar.DAY_OF_WEEK, 1);// the day after the end of the previous week
+                    endOfWeek.setTime(currentWeekStartCalendar.getTime());
+                    endOfWeek.add(Calendar.DAY_OF_WEEK, 7);
+                    if (endOfWeek.after(endDate)) {
+                        endOfWeek.setTime(endDate);
+                    }
+                    currentWeekJogs = new ArrayList<>();// empty the current week jogs list
+                currentWeekJogs.add(jogs.get(i)); // add the current jog to the new week
+                    continue;
+            }
+
+        }
+        // handle the remaining for the last week
+        if (currentWeekJogs.size() > 0) {
+            final List<Double> speeds = new ArrayList<>();
+            for (final Jogging jog : currentWeekJogs) {
+                speeds.add(jog.getDistance() / 1000.000 / (jog.getPeriodInMinutes() / 60.000));// get the speed
+                                                                                               // in KM/hour
+            }
+            float totalSpeeds = 0f;
+            int totalDistance = 0;
+            for (int j = 0; j < speeds.size(); j++) {
+                totalSpeeds += speeds.get(j);
+                totalDistance += jogs.get(j).getDistance();
+            }
+            SpeedAndDistanceReportResponse currentWeekReport = new SpeedAndDistanceReportResponse();
+            if (currentWeekJogs.size() != 0) {
+                final DecimalFormat df = new DecimalFormat("####.##");
+                currentWeekReport.setDistance(Double.parseDouble(df.format((double) totalDistance / currentWeekJogs.size() / 1000)));
+                currentWeekReport.setSpeed(Double.parseDouble(df.format(totalSpeeds / speeds.size())));
+            }
+            currentWeekReport.setStartOfWeek(currentWeekStartCalendar.getTime());
+            currentWeekReport.setEndOfWeek(endOfWeek.getTime());
+            response.add(currentWeekReport);
+            currentWeekReport = new SpeedAndDistanceReportResponse();
+            currentWeekJogs = new ArrayList<>();
+        }
         return response;
 
+    }
+
+    @Override
+    public List<SpeedAndDistanceReportResponse> getAvgSpeedAndDistanceForTheLast2WeeksWeek(final String userEmail) {
+
+        SpeedAndDistanceReportResponse firstWeek = new SpeedAndDistanceReportResponse();
+        SpeedAndDistanceReportResponse secondWeek = new SpeedAndDistanceReportResponse();
+        final List<SpeedAndDistanceReportResponse> response = new ArrayList();
+        final List<Jogging> firstWeekJogs = new ArrayList<>();
+        final List<Jogging> secondWeekJogs = new ArrayList<>();
+
+        final Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(new Date());
+        final Calendar startCalendar = Calendar.getInstance();
+        startCalendar.setTime(new Date());
+        startCalendar.add(Calendar.DAY_OF_WEEK, -14);// two week ago
+        final Calendar intermediatDate = Calendar.getInstance();
+        intermediatDate.setTime(startCalendar.getTime());
+        intermediatDate.add(Calendar.DAY_OF_WEEK, 7);
+
+        final List<Jogging> jogs = jogRepository.findByUserEmailAndDateAfterAndDateBeforeOrderByDate(userEmail, startCalendar.getTime(), endCalendar.getTime());
+
+        for (final Jogging jog : jogs) {
+            if (jog.getDate().before(intermediatDate.getTime())) {
+                firstWeekJogs.add(jog);
+            } else {
+                secondWeekJogs.add(jog);
+            }
+        }
+        // calculate the averages
+        firstWeek = calculateAvg(firstWeekJogs);
+        firstWeek.setStartOfWeek(startCalendar.getTime());
+        firstWeek.setEndOfWeek(intermediatDate.getTime());
+
+        secondWeek = calculateAvg(secondWeekJogs);
+        secondWeek.setStartOfWeek(intermediatDate.getTime());
+        secondWeek.setEndOfWeek(endCalendar.getTime());
+
+        response.add(firstWeek);
+        response.add(secondWeek);
+
+        return response;
     }
 
     @Override
@@ -106,14 +203,13 @@ public class ReportServiceImpl implements ReportService {
             }
         }
 
-        if(speed.equalsIgnoreCase("fastest")){
-            return modelMapper.map(maxSpeedJog,JoggingReponseDto.class);
-        }else if(speed.equalsIgnoreCase("slowest")){
-            return  modelMapper.map(minSpeedJog,JoggingReponseDto.class);
+        if (speed.equalsIgnoreCase("fastest")) {
+            return modelMapper.map(maxSpeedJog, JoggingReponseDto.class);
+        } else if (speed.equalsIgnoreCase("slowest")) {
+            return modelMapper.map(minSpeedJog, JoggingReponseDto.class);
         }
         throw ToptalError.JOGGING_VALIDATION_ERROR_NOT_BAD_REPORT_REQUEST_DATA.buildException();
     }
-
 
     private double calculateSpeed(final Jogging jog) {
         return jog.getDistance() / 1000.00 / ((double) jog.getPeriodInMinutes() / 60);
@@ -136,7 +232,36 @@ public class ReportServiceImpl implements ReportService {
         if (result == null) {
             return 0;
         }
-        return result / 60;
+        final DecimalFormat df = new DecimalFormat("####.##");
+
+        return Double.parseDouble(df.format(result / 60));
+    }
+
+    private SpeedAndDistanceReportResponse calculateAvg(final List<Jogging> jogs) {
+        final SpeedAndDistanceReportResponse currentWeekReport = new SpeedAndDistanceReportResponse();
+        if (jogs.size() > 0) {
+            final List<Double> speeds = new ArrayList<>();
+            for (final Jogging jog : jogs) {
+                speeds.add(jog.getDistance() / 1000.000 / (jog.getPeriodInMinutes() / 60.000));// get the speed
+                                                                                               // in KM/hour
+            }
+            float totalSpeeds = 0f;
+            int totalDistance = 0;
+            for (int j = 0; j < speeds.size(); j++) {
+                totalSpeeds += speeds.get(j);
+                totalDistance += jogs.get(j).getDistance();
+            }
+            if (jogs.size() != 0) {
+                final DecimalFormat df = new DecimalFormat("####.##");
+                currentWeekReport.setDistance(Double.parseDouble(df.format((double) totalDistance / jogs.size() / 1000)));
+                currentWeekReport.setSpeed(Double.parseDouble(df.format(totalSpeeds / speeds.size())));
+            }
+        } else {
+            currentWeekReport.setDistance(0);
+            currentWeekReport.setSpeed(0);
+        }
+
+        return currentWeekReport;
     }
 
 }

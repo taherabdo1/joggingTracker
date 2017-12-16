@@ -2,6 +2,9 @@ package com.toptal.demo.controllers;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.toptal.demo.controllers.error.ToptalError;
 import com.toptal.demo.controllers.error.ToptalException;
 import com.toptal.demo.dto.JoggingReponseDto;
 import com.toptal.demo.dto.SpeedAndDistanceReportResponse;
@@ -29,14 +33,29 @@ public class ReportController {
     @Autowired
     ReportService reportService;
 
-    @ApiOperation(value = "get the average speed and distance for week for the current user", code = 200)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "get the average speed and distance for week for the current user") })
-    @RequestMapping(value = "/averageSpeedAndDistancePerWeek", method = RequestMethod.GET)
-    public SpeedAndDistanceReportResponse getAvgSpeedAndDistanceForWeek(
-            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final Date startDate) {
+    @ApiOperation(value = "get the average speed and distance for the previous 2 weeks for the current user", code = 200)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "get the average speed and distance for the previous 2 weeks for the current user") })
+    @RequestMapping(value = "/averageSpeedAndDistanceForTheLast2Weeks", method = RequestMethod.GET)
+    public List<SpeedAndDistanceReportResponse> getAvgSpeedAndDistanceForTheLast2WeeksWeek() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         final String email = auth.getName(); // get logged in userEmail
-        return reportService.getAgvSpeedAndDistanceForWeek(email, startDate);
+        return reportService.getAvgSpeedAndDistanceForTheLast2WeeksWeek(email);
+    }
+
+    @ApiOperation(value = "get the average speed and distance per from start date to the end date week for the current user", code = 200)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "get the average speed and distance per from start date to the end date week for the current user") })
+    @RequestMapping(value = "/averageSpeedAndDistancePerWeek", method = RequestMethod.GET)
+    public List<SpeedAndDistanceReportResponse> getAvgSpeedAndDistanceForWeek(
+            @Valid @RequestParam(required = true, name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final Date startDate,
+            @Valid @RequestParam(required = true, name = "endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final Date endDate)
+        throws ToptalException {
+        if (endDate.before(startDate)) {
+            throw ToptalError.REPORT_DATES_ERROR_END_DATE_CANT_BE_BEFORE_START_DATE.buildException();
+        }
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        final String email = auth.getName(); // get logged in userEmail
+        return reportService.getAgvSpeedAndDistanceForWeek(email, startDate, endDate);
     }
 
     @ApiOperation(value = "get the fastest/slowest jog in the week/month/year for the current user", code = 200)

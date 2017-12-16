@@ -32,4 +32,11 @@ public class SpeedAndDistanceReportResponse {
     @JsonProperty(value = "start_Of_Week")
     @ApiModelProperty("yyyy-mm-dd , eg 2017-12-01")
     private Date startOfWeek;
+
+    @Temporal(TemporalType.DATE)
+    @JsonDeserialize(using = CustomDateDeserializer.class)
+    @JsonProperty(value = "end_Of_Week")
+    @ApiModelProperty("yyyy-mm-dd , eg 2017-12-08")
+    private Date endOfWeek;
+    
 }
