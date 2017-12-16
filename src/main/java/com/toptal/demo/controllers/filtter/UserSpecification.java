@@ -1,7 +1,5 @@
 package com.toptal.demo.controllers.filtter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +13,11 @@ import org.springframework.data.jpa.domain.Specifications;
 
 import com.toptal.demo.controllers.error.ToptalError;
 import com.toptal.demo.controllers.error.ToptalException;
-import com.toptal.demo.entities.Jogging;
+import com.toptal.demo.entities.User;
 
-public class JogSpecification {
+public class UserSpecification {
 
-    public static Specification<Jogging> getJogSpecification(final List<Object> specFilterCriteria) throws ToptalException {
+    public static Specification<User> getJogSpecification(final List<Object> specFilterCriteria) throws ToptalException {
         List<Object> stack = new ArrayList();
         for (int i = 0; i < specFilterCriteria.size(); i++) {
             if (specFilterCriteria.get(i).getClass() == SpecFilterCriteria.class) {
@@ -35,8 +33,6 @@ public class JogSpecification {
                 stack.add(specFilterCriteria.get(i));
             }
 
-            // return builder.and(ands.toArray(new Predicate[ands.size()]));
-
         }
         while (stack.size() > 1) {
             stack = removeParenthises(stack);
@@ -46,33 +42,19 @@ public class JogSpecification {
         return (Specification) stack.get(0);
     }
 
-    public static Specification<Jogging> getSpecification(final SpecFilterCriteria criteria) {
-        return new Specification<Jogging>() {
+    public static Specification<User> getSpecification(final SpecFilterCriteria criteria) {
+        return new Specification<User>() {
 
             @Override
-            public Predicate toPredicate(final Root<Jogging> root, final CriteriaQuery<?> query, final CriteriaBuilder cb) {
-                final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-                if (criteria.getKey().equalsIgnoreCase("date")) {
-                    // Path<Date> expiryDate = accounts.<Date> get("expiryDate");
-
-                    try {
-                        criteria.setValue(simpleDateFormat.parse((String) criteria.getValue()).getTime());
-                    } catch (final ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
+            public Predicate toPredicate(final Root<User> root, final CriteriaQuery<?> query, final CriteriaBuilder cb) {
                 query.distinct(Boolean.TRUE);
+                if (((String) criteria.getValue()).equalsIgnoreCase("true")) {
+                    criteria.setValue(true);
+                } else if (((String) criteria.getValue()).equalsIgnoreCase("false")) {
+                    criteria.setValue(false);
+                }
                 switch (criteria.getOperation()) {
                     case eq:
-                        if (criteria.getKey().equalsIgnoreCase("date")) {
-                            try {
-                                return cb.equal(root.get(criteria.getKey()), simpleDateFormat.parse((String) criteria.getValue()));
-                            } catch (final ParseException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
                         return cb.equal(root.get(criteria.getKey()), criteria.getValue());
                     case ne:
                         return cb.notEqual(root.get(criteria.getKey()), criteria.getValue());
@@ -96,10 +78,6 @@ public class JogSpecification {
                 if (input.get(i + 1) instanceof Specification && input.get(i + 2) instanceof Character && (char) input.get(i + 2) == ')') {
                     output.add(input.get(i + 1));
                     i += 3;
-                    // // the last ')' is not added
-                    // if (i >= input.size()) {
-                    // output.add(')');
-                    // }
                 } else {// outer '('
                     output.add(input.get(i));
                     i++;
@@ -147,4 +125,5 @@ public class JogSpecification {
         }
         return input;
     }
+
 }

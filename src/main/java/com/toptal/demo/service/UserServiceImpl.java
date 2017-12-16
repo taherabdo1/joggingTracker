@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.toptal.demo.controllers.error.ToptalError;
 import com.toptal.demo.controllers.error.ToptalException;
+import com.toptal.demo.controllers.filtter.CriteriaParser;
+import com.toptal.demo.controllers.filtter.UserSpecification;
 import com.toptal.demo.dto.UserDto;
 import com.toptal.demo.dto.UserRequestDto;
 import com.toptal.demo.entities.User;
@@ -47,7 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAll(final int pageSize, final int pageNumer) throws ToptalException {
+    public List<UserDto> getAll(final int pageSize, final int pageNumer, final String filterBy) throws ToptalException {
         if (pageSize <= 0) {
             throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_SIZE.buildException();
         }
@@ -55,7 +57,9 @@ public class UserServiceImpl implements UserService {
             throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_NUMBER.buildException();
         }
         final Pageable pageable = createPageRequest(pageSize, pageNumer);
-        final List<User> users = Lists.newArrayList(userRepository.findAll(pageable));
+        final List<Object> filterObjects = CriteriaParser.parse(filterBy);
+
+        final List<User> users = Lists.newArrayList(userRepository.findAll(UserSpecification.getJogSpecification(filterObjects), pageable));
         final List<UserDto> resultList = new ArrayList<>();
         for (final User user : users) {
             resultList.add(modelMapper.map(user, UserDto.class));
