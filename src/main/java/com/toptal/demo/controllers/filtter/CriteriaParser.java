@@ -12,15 +12,14 @@ public class CriteriaParser {
         comparisonOperators.add("nq");
         comparisonOperators.add("gt");
         comparisonOperators.add("lt");
-        
-        Pattern.compile(
-                "^\\((\\w+)\\s*(eq|ne|gt|lt)\\s*(\\p{Punct}?)([\\w\\W]+)(\\p{Punct}?)\\)\\s*$");
+
+        Pattern.compile("^\\((\\w+)\\s*(eq|ne|gt|lt)\\s*(\\p{Punct}?)([\\w\\W]+)(\\p{Punct}?)\\)\\s*$");
 
         // String filtterString = "(date eq '2016-05-01') AND ((distance gt 20) OR (distance lt 10))";
         filtterString = filtterString.replace("'", "");
         final List<Object> tokens = new ArrayList<Object>();
-        
-        for(int i = 0 ; i < filtterString.length();) {
+
+        for (int i = 0; i < filtterString.length();) {
             if (filtterString.charAt(i) == '(') {
                 tokens.add('(');
                 i++;
@@ -36,22 +35,25 @@ public class CriteriaParser {
                 }
                 tokens.add(current.trim());
             }
-            
+
             System.out.println(tokens);
         }
 
         final List<Object> specs = new ArrayList<>();
-        
+
         for (int i = 0; i < tokens.size() - 1;) {
-            if (comparisonOperators.contains(tokens.get(i+1))) {
-                specs.add(new SpecFilterCriteria((String) tokens.get(i), RsqlSearchOperation.valueOf((String)tokens.get(i+1)),
-                        tokens.get(i + 2)));
-                i+=3;
-            }else{
+            if (comparisonOperators.contains(tokens.get(i + 1))) {
+                specs.add(new SpecFilterCriteria((String) tokens.get(i), RsqlSearchOperation.valueOf((String) tokens.get(i + 1)), tokens.get(i + 2)));
+                i += 3;
+            } else {
                 specs.add(tokens.get(i));
                 i++;
             }
             System.out.println(specs);
+        }
+        // add the last ")"
+        if (tokens.get(tokens.size() - 1) instanceof Character && (char) tokens.get(tokens.size() - 1) == ')') {
+            specs.add(tokens.get(tokens.size() - 1));
         }
 
         return specs;

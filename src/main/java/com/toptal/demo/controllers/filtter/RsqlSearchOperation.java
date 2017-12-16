@@ -1,7 +1,7 @@
 package com.toptal.demo.controllers.filtter;
 
 public enum RsqlSearchOperation {
-    eq, ne, gt, lt;
+    eq, ne, gt, lt, and, or, AND, OR;
 
     // private ComparisonOperator operator;
     //

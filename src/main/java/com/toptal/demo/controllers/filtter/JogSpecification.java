@@ -1,7 +1,9 @@
 package com.toptal.demo.controllers.filtter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -9,55 +11,159 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.domain.Specifications;
 
+import com.toptal.demo.controllers.error.ToptalError;
+import com.toptal.demo.controllers.error.ToptalException;
 import com.toptal.demo.entities.Jogging;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public class JogSpecification {
 
+    public static Specification<Jogging> getJogSpecification(final List<Object> specFilterCriteria) throws ToptalException {
+        List<Object> stack = new ArrayList();
+        for (int i = 0; i < specFilterCriteria.size(); i++) {
+            if (specFilterCriteria.get(i).getClass() == SpecFilterCriteria.class) {
+                final SpecFilterCriteria criteria = (SpecFilterCriteria) specFilterCriteria.get(i);
+                try {
+                    stack.add(getSpecification(criteria));
+                } catch (final Exception e) {
+                    ToptalError.INCORRECT_FILTER_CRITERIA.buildException();
+                }
+            } else if (specFilterCriteria.get(i) instanceof Character) {
+                stack.add(specFilterCriteria.get(i));
+            } else if (specFilterCriteria.get(i) instanceof String) {
+                stack.add(specFilterCriteria.get(i));
+            }
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class JogSpecification{
+            // return builder.and(ands.toArray(new Predicate[ands.size()]));
 
-    private SpecFilterCriteria criteria;
-    
-    public Predicate toPredicate(final Root<Jogging> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) {
-        switch (criteria.getOperation()) {
-            case eq:
-                return builder.equal(root.get(criteria.getKey()), criteria.getValue());
-            case ne:
-                return builder.notEqual(root.get(criteria.getKey()), criteria.getValue());
-            case gt:
-                return builder.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());
-            case lt:
-                return builder.lessThan(root.get(criteria.getKey()), criteria.getValue().toString());
-               
-            default:
-                return null;
         }
+        while (stack.size() > 1) {
+            stack = removeParenthises(stack);
+            stack = constructLogicalPredicates(stack);
 
+        }
+        return (Specification) stack.get(0);
     }
 
-    public Specification<Jogging> getJogSpecification(final List<Object> specFilterCriteria) {
-        final Stack<Object> stack = new Stack<>();
-        return (root, query, builder) -> {
-            for (final int i = 0; i < specFilterCriteria.size();) {
-                if (specFilterCriteria.get(i).getClass().equals(String.class) && specFilterCriteria.get(i) == "(") {
-                    stack.push(specFilterCriteria.get(i));
-                } else if (specFilterCriteria.get(i).getClass().equals(String.class) && specFilterCriteria.get(i) == ")") {
-                    stack.push(specFilterCriteria.get(i));
-                } else if (specFilterCriteria.get(i).getClass().equals(SpecFilterCriteria.class)) {
-                    this.criteria = (SpecFilterCriteria) specFilterCriteria;
-                    stack.push(toPredicate(root, query, builder));
+    public static Specification<Jogging> getSpecification(final SpecFilterCriteria criteria) {
+        return new Specification<Jogging>() {
+
+            @Override
+            public Predicate toPredicate(final Root<Jogging> root, final CriteriaQuery<?> query, final CriteriaBuilder cb) {
+                final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+                if (criteria.getKey().equalsIgnoreCase("date")) {
+                    // Path<Date> expiryDate = accounts.<Date> get("expiryDate");
+
+                    try {
+                        criteria.setValue(simpleDateFormat.parse((String) criteria.getValue()).getTime());
+                    } catch (final ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
-                
-//                return builder.and(ands.toArray(new Predicate[ands.size()]));
+                query.distinct(Boolean.TRUE);
+                switch (criteria.getOperation()) {
+                    case eq:
+                        if (criteria.getKey().equalsIgnoreCase("date")) {
+                            try {
+                                return cb.equal(root.get(criteria.getKey()), simpleDateFormat.parse((String) criteria.getValue()));
+                            } catch (final ParseException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                        return cb.equal(root.get(criteria.getKey()), criteria.getValue());
+                    case ne:
+                        return cb.notEqual(root.get(criteria.getKey()), criteria.getValue());
+                    case gt:
+                        return cb.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());
+                    case lt:
+                        return cb.lessThan(root.get(criteria.getKey()), criteria.getValue().toString());
+                    default:
+                        return null;
+                }
+
             }
-            query.distinct(Boolean.TRUE);
-            return null;
         };
+    }
+
+    private static List<Object> removeParenthises(final List<Object> input) {
+        final List<Object> output = new ArrayList<>();
+        for (int i = 0; i < input.size();) {
+            if (input.get(i) instanceof Character && (char) input.get(i) == '(') {
+                // '(' SPEC ')'
+                if (input.get(i + 1) instanceof Specification && input.get(i + 2) instanceof Character && (char) input.get(i + 2) == ')') {
+                    output.add(input.get(i + 1));
+                    i += 3;
+                    // // the last ')' is not added
+                    // if (i >= input.size()) {
+                    // output.add(')');
+                    // }
+                } else {// outer '('
+                    output.add(input.get(i));
+                    i++;
+                }
+            } else {// OR/AND
+                output.add(input.get(i));
+                i++;
+            }
+        }
+        return output;
+    }
+
+    private static List<Object> constructLogicalPredicates(final List<Object> input) throws ToptalException {
+        final List<Object> output = new ArrayList<>();
+        // starts like (.... --> the parenthisise
+        if (!(input.get(0) instanceof Specification)) {
+            output.add(input.get(0));
+        }
+        if (input.get(0) instanceof Specification && input.get(1) instanceof String) {
+            output.add(input.get(0));
+        }
+        for (int i = 0; i < input.size();) {
+            if (input.get(i) instanceof String) {
+                // this is a AND/OR operation
+                if (input.get(i - 1) instanceof Specification && input.get(i + 1) instanceof Specification) {
+                    if (((String) input.get(i)).equalsIgnoreCase("AND")) {
+                        final Specification and = Specifications.where((Specification) input.get(i - 1)).and((Specification) input.get(i + 1));
+                        input.remove(i - 1);
+                        input.remove(i - 1);
+                        input.remove(i - 1);
+                        input.add(i - 1, and);
+                    } else if (((String) input.get(i)).equalsIgnoreCase("OR")) {
+                        final Specification or = Specifications.where((Specification) input.get(i - 1)).or((Specification) input.get(i + 1));
+                        input.remove(i - 1);
+                        input.remove(i - 1);
+                        input.remove(i - 1);
+                        input.add(i - 1, or);
+                    }
+                } else {
+                    i++;
+                }
+            } else {
+                i++;
+            }
+        }
+        return input;
+    }
+
+    public static void main(final String[] args) {
+        final List<String> x = new ArrayList<>();
+        x.add("x");
+        x.add("x2");
+        x.add("x3");
+        x.add("y");
+        x.add("y1");
+        x.add("y2");
+        while (true) {
+            x.remove(1);
+            x.remove(1);
+            x.remove(1);
+            x.add(1, "new");
+            break;
+        }
+
+        System.out.println(x);
     }
 }

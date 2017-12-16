@@ -1,14 +1,22 @@
 package com.toptal.demo.service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -44,6 +52,8 @@ public class JoggingServiceImpl implements JoggingService {
     @Autowired
     ModelMapper modelMapper;
 
+    final DecimalFormat df = new DecimalFormat("####.##");
+
     @Override
     public JoggingReponseDto addNewJogging(final JoggingRequestDTO joggingRequestDTO, final String userEmail) throws ToptalException {
         final User user = userRepository.findOneByEmail(userEmail).orElse(null);
@@ -77,6 +87,8 @@ public class JoggingServiceImpl implements JoggingService {
         }
         final Jogging result = joggingRepository.save(jogging);
         final JoggingReponseDto response = modelMapper.map(result, JoggingReponseDto.class);
+        response.setSpeed(Double.parseDouble(df.format(result.getDistance() / 1000.000 / (result.getPeriodInMinutes() / 60.000))));
+
         return response;
     }
 
@@ -87,6 +99,8 @@ public class JoggingServiceImpl implements JoggingService {
             throw ToptalError.JOGGING_NOT_FOUND.buildException();
         }
         final JoggingReponseDto response = modelMapper.map(selected, JoggingReponseDto.class);
+        response.setSpeed(Double.parseDouble(df.format(selected.getDistance() / 1000.000 / (selected.getPeriodInMinutes() / 60.000))));
+
         return response;
     }
 
@@ -127,6 +141,9 @@ public class JoggingServiceImpl implements JoggingService {
         }
         final Jogging result = joggingRepository.save(jogging);
         final JoggingReponseDto response = modelMapper.map(result, JoggingReponseDto.class);
+
+        response.setSpeed(Double.parseDouble(df.format(result.getDistance() / 1000.000 / (result.getPeriodInMinutes() / 60.000))));
+
         return response;
 
     }
@@ -135,20 +152,48 @@ public class JoggingServiceImpl implements JoggingService {
     public List<JoggingReponseDto> getAllForAuser(final String userEmail, final int pageNumber, final int pageSize, final String filterBy)
         throws ToptalException {
         if (pageSize <= 0) {
+
             throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_SIZE.buildException();
         }
         if (pageNumber < 0) {
             throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_NUMBER.buildException();
         }
-        final List<Object> conditions = CriteriaParser.parse(filterBy);
-        final JogSpecification jogSpecification = new JogSpecification();
-        jogSpecification.getJogSpecification(conditions);
+
+        final User user = userRepository.findOneByEmail(userEmail).get();
         final Pageable pageRequest = createPageRequest(pageSize, pageNumber);
-        final List<Jogging> joggingsList = joggingRepository.findByUserEmail(userEmail, pageRequest);
+        List<Jogging> joggingsList = null;
+
+        if (filterBy != "" && filterBy != null) {
+            try {
+                final List<Object> filterObjects = CriteriaParser.parse(filterBy);
+                JogSpecification.getJogSpecification(filterObjects);
+                final Specification<Jogging> userSpecification = new Specification<Jogging>() {
+                    
+                    @Override
+                    public Predicate toPredicate(final Root<Jogging> root, final CriteriaQuery<?> query, final CriteriaBuilder cb) {
+                        return cb.equal(root.get("user"), user);
+                    }
+                };
+                final Specification<Jogging> all = JogSpecification.getJogSpecification(filterObjects);
+
+                joggingsList = Lists.newArrayList(
+                        joggingRepository.findAll(Specifications.where(all).and(userSpecification), pageRequest).getContent());
+            } catch (final Exception e) {
+                throw ToptalError.INCORRECT_FILTER_CRITERIA.buildException();
+            }
+
+        } else {// no filter criteria needed
+            joggingsList = Lists.newArrayList(joggingRepository.findAll(pageRequest).getContent());
+        }
+
         // joggingsList = getPage(pageRequest, joggingsList);
         final List<JoggingReponseDto> response = new ArrayList<>();
         for (final Jogging jogging : joggingsList) {
-            response.add(modelMapper.map(jogging, JoggingReponseDto.class));
+            final JoggingReponseDto joggingReponseDto = modelMapper.map(jogging, JoggingReponseDto.class);
+
+            joggingReponseDto.setSpeed(Double.parseDouble(df.format(jogging.getDistance() / 1000.000 / (jogging.getPeriodInMinutes() / 60.000))));
+
+            response.add(joggingReponseDto);
         }
         return response;
     }
@@ -163,11 +208,26 @@ public class JoggingServiceImpl implements JoggingService {
         }
         final Pageable pageRequest = createPageRequest(pageSize, pageNumber);
         final List<JoggingReponseDto> responseData = new ArrayList<>();
+        List<Jogging> joggingsList = null;
+        if (filterBy != "" && filterBy != null) {
+            try {
+                final List<Object> filterObjects = CriteriaParser.parse(filterBy);
+                joggingsList = Lists.newArrayList(joggingRepository.findAll(JogSpecification.getJogSpecification(filterObjects), pageRequest).getContent());
+            } catch (final Exception e) {
+                throw ToptalError.INCORRECT_FILTER_CRITERIA.buildException();
+            }
 
-        List<Jogging> joggingsList = Lists.newArrayList(joggingRepository.findAll(pageRequest));
-        joggingsList = getPage(pageRequest, joggingsList);
+        } else {// no filter criteria needed
+            joggingsList = Lists.newArrayList(joggingRepository.findAll(pageRequest).getContent());
+        }
+
+        // joggingsList = getPage(pageRequest, joggingsList);
         for (final Jogging jogging : joggingsList) {
-            responseData.add(modelMapper.map(jogging, JoggingReponseDto.class));
+
+            final JoggingReponseDto joggingReponseDto = modelMapper.map(jogging, JoggingReponseDto.class);
+
+            joggingReponseDto.setSpeed(Double.parseDouble(df.format(jogging.getDistance() / 1000.000 / (jogging.getPeriodInMinutes() / 60.000))));
+            responseData.add(joggingReponseDto);
         }
         return responseData;
     }

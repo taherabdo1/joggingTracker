@@ -94,11 +94,11 @@
    <artifactId>modelmapper</artifactId>
    <version>0.7.4</version>
   </dependency>
-<!-- RSQL for dynamic specifications -->
+  <!-- RSQL for dynamic specifications -->
   <dependency>
-      <groupId>cz.jirutka.rsql</groupId>
-      <artifactId>rsql-parser</artifactId>
-      <version>2.0.0</version>
+   <groupId>cz.jirutka.rsql</groupId>
+   <artifactId>rsql-parser</artifactId>
+   <version>2.0.0</version>
   </dependency>
   <dependency>
    <groupId>org.springframework.boot</groupId>
@@ -170,6 +170,7 @@
    <artifactId>commons-io</artifactId>
    <version>1.3.2</version>
   </dependency>
+  
  </dependencies>
 
  <build>

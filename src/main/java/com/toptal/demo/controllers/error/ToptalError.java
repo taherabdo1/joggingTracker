@@ -41,8 +41,10 @@ public enum ToptalError {
     USER_ACTIVATION_KEY_ERROR(HttpStatus.BAD_REQUEST, "the sent Activation Key is not correct"),
 
     /** the sent Activation Key is not correct */
-    REPORT_DATES_ERROR_END_DATE_CANT_BE_BEFORE_START_DATE(HttpStatus.BAD_REQUEST, "start date should be before end date");
+    REPORT_DATES_ERROR_END_DATE_CANT_BE_BEFORE_START_DATE(HttpStatus.BAD_REQUEST, "start date should be before end date"),
 
+    /** incorrect filter criteria */
+    INCORRECT_FILTER_CRITERIA(HttpStatus.BAD_REQUEST, "incorrect filter criteria, please recheck");
     
     /** The http status. */
     private HttpStatus httpStatus;
