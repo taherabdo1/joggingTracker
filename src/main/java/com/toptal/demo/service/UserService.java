@@ -3,8 +3,8 @@ package com.toptal.demo.service;
 import java.util.List;
 
 import com.toptal.demo.controllers.error.ToptalException;
+import com.toptal.demo.dto.UpdateUserDto;
 import com.toptal.demo.dto.UserDto;
-import com.toptal.demo.dto.UserRequestDto;
 
 public interface UserService {
 
@@ -16,7 +16,7 @@ public interface UserService {
 
     void delete(long id) throws ToptalException;
 
-    UserDto update(UserRequestDto userDto) throws ToptalException;
+    UserDto update(UpdateUserDto updateUserDto) throws ToptalException;
 
     List<UserDto> getAll(final int pageSize, final int pageNumber, String filterBy) throws ToptalException;
 }

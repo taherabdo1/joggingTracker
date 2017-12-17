@@ -5,6 +5,7 @@ import java.util.List;
 import com.toptal.demo.controllers.error.ToptalException;
 import com.toptal.demo.dto.JoggingReponseDto;
 import com.toptal.demo.dto.JoggingRequestDTO;
+import com.toptal.demo.dto.UpdateJogDto;
 
 public interface JoggingService {
 
@@ -12,7 +13,7 @@ public interface JoggingService {
 
     public JoggingReponseDto getOne(final Long id) throws ToptalException;
 
-    public JoggingReponseDto update(final JoggingRequestDTO joggingRequestDTO) throws ToptalException;
+    public JoggingReponseDto update(final UpdateJogDto updateJogDto) throws ToptalException;
 
     public List<JoggingReponseDto> getAllForAuser(final String userEmail, final int pageNumer, final int pageSize, final String filterBy)
         throws ToptalException;

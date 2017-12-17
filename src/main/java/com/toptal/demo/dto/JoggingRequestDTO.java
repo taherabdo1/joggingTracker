@@ -4,10 +4,12 @@ import java.util.Date;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 
 import org.springframework.format.annotation.NumberFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,10 +32,13 @@ public class JoggingRequestDTO {
     @JsonProperty(value = "id", required = false)
     private long id;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonProperty(value = "date", required = true)
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @JsonProperty(value = "date", required = true)
     @JsonDeserialize(using = CustomDateDeserializer.class)    
-    @ApiModelProperty(value = "YYYY-MM-DD, e.g. 2015-01-16")
+//    @ApiModelProperty(value = "YYYY-MM-DD, e.g. 2015-01-16")
+    @ApiModelProperty(required = false, dataType = "org.joda.time.LocalDate",example="")
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING, timezone="CET")
+    @Future
     private Date date;
 
     // the period to run in minutes

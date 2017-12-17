@@ -44,7 +44,11 @@ public enum ToptalError {
     REPORT_DATES_ERROR_END_DATE_CANT_BE_BEFORE_START_DATE(HttpStatus.BAD_REQUEST, "start date should be before end date"),
 
     /** incorrect filter criteria */
-    INCORRECT_FILTER_CRITERIA(HttpStatus.BAD_REQUEST, "incorrect filter criteria, please recheck");
+    INCORRECT_FILTER_CRITERIA(HttpStatus.BAD_REQUEST, "incorrect filter criteria, please recheck"),
+    
+    /** incorrect filter criteria */
+    EXTERNAL_SERVICE_ERROR(HttpStatus.NOT_FOUND, "can't get the weather info from the external service");
+    
     
     /** The http status. */
     private HttpStatus httpStatus;

@@ -24,7 +24,9 @@ public class UserRequestDto {
     private boolean isBlocked = false;
     @JsonProperty(value = "email", required = true)
     private String  email;
+    @JsonProperty(value = "password", required = false)
+    private String password;
     @ApiModelProperty(dataType = "string", allowableValues = "ROLE_ADMIN, ROLE_MANAGER, ROLE_USER")
     private Role role;
-
+    
 }

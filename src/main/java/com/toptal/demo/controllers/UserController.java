@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.toptal.demo.controllers.error.ToptalException;
+import com.toptal.demo.dto.UpdateUserDto;
 import com.toptal.demo.dto.UserDto;
-import com.toptal.demo.dto.UserRequestDto;
 import com.toptal.demo.service.UserService;
 
 import io.swagger.annotations.ApiOperation;
@@ -37,7 +37,7 @@ public class UserController {
 
     @ApiOperation(value = "get all users", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "get all the users") })
-    @RequestMapping(value = "/getAll", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<UserDto> getAllUsers(
             @Pattern(regexp = "[\\s]*[0-9]*[1-9]+", message = "size must be positive natual number ") @RequestParam(required = false, name = "size") Integer pageSize,
             @Pattern(regexp = "[\\s]*[0-9]*[1-9]+", message = "page number must be greater than or equal 0") @RequestParam(required = false, name = "pageNumber") Integer pageNumer,
@@ -64,19 +64,19 @@ public class UserController {
         return userService.getUserByID(id);
     }
 
-    @ApiOperation(value = "delete user", code = 200)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "the user deleted successfully") })
-    @RequestMapping(value = "/delete/{ID}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "delete user", code = 204)
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "the user deleted successfully") })
+    @RequestMapping(value = "/{ID}", method = RequestMethod.DELETE)
     public Response deleteUserByID(@PathVariable(name = "ID") final long id) throws ToptalException {
         userService.delete(id);
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     @ApiOperation(value = "update user", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "the user updated successfully") })
-    @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public UserDto updateUser(@RequestBody final UserRequestDto userDto) throws ToptalException {
-        return userService.update(userDto);
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
+    public UserDto updateUser(@RequestBody final UpdateUserDto updateUserDto) throws ToptalException {
+        return userService.update(updateUserDto);
     }
 
     @ApiOperation(value = "Re-activate blocked user by giving userId", code = 204)

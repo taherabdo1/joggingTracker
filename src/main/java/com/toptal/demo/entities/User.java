@@ -42,7 +42,7 @@ public class User {
 	private String password;
 
     @Column(nullable = true)
-    private int age;
+    private Integer age;
 
     @Column(nullable = true)
     private String fullName;

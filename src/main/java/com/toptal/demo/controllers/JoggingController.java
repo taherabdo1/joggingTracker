@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.toptal.demo.controllers.error.ToptalException;
 import com.toptal.demo.dto.JoggingReponseDto;
 import com.toptal.demo.dto.JoggingRequestDTO;
+import com.toptal.demo.dto.UpdateJogDto;
 import com.toptal.demo.service.JoggingService;
 
 import io.swagger.annotations.ApiOperation;
@@ -54,9 +55,9 @@ public class JoggingController {
 
     @ApiOperation(value = "update pre-existing jogging", code = 201)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "the jogging updated successfully") })
-    @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public JoggingReponseDto update(@Valid @RequestBody final JoggingRequestDTO joggingRequestDTO) throws ToptalException {
-        return joggingService.update(joggingRequestDTO);
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
+    public JoggingReponseDto update(@Valid @RequestBody final UpdateJogDto updateJogDto) throws ToptalException {
+        return joggingService.update(updateJogDto);
     }
 
     @ApiOperation(value = "get All Jogging for a user", code = 200)

@@ -26,6 +26,7 @@ import com.toptal.demo.controllers.filtter.CriteriaParser;
 import com.toptal.demo.controllers.filtter.JogSpecification;
 import com.toptal.demo.dto.JoggingReponseDto;
 import com.toptal.demo.dto.JoggingRequestDTO;
+import com.toptal.demo.dto.UpdateJogDto;
 import com.toptal.demo.entities.Jogging;
 import com.toptal.demo.entities.Location;
 import com.toptal.demo.entities.User;
@@ -62,6 +63,9 @@ public class JoggingServiceImpl implements JoggingService {
 
         // add the user to the new jogging
         jogging.setUser(user);
+        // Calendar calendar = Calendar.getInstance();
+        // calendar.setTimeZone(TimeZone.);
+        // jogging.getDate()
         Location location = locationRepository.findByLocationName(jogging.getLocation().getLocationName());
         // if it is a new location for the system add it
         if (null == location) {
@@ -78,9 +82,9 @@ public class JoggingServiceImpl implements JoggingService {
         // all = getPage(pageRequest, all);
         final Calendar calendar = Calendar.getInstance();
         for (final Jogging run : all) {
-            calendar.setTimeInMillis(run.getDate().getTime());
+            calendar.setTimeInMillis(run.getDate().getTime().getTime());
             calendar.add(Calendar.MINUTE, run.getPeriodInMinutes());
-            if (run.getDate().before(jogging.getDate()) && calendar.getTime().after(jogging.getDate())
+            if (run.getDate().before(jogging.getDate()) && calendar.getTime().after(jogging.getDate().getTime())
                     || run.getDate().getTime() == jogging.getDate().getTime()) {
                 throw ToptalError.JOGGING_OVERLAPING.buildException();
             }
@@ -105,21 +109,37 @@ public class JoggingServiceImpl implements JoggingService {
     }
 
     @Override
-    public JoggingReponseDto update(final JoggingRequestDTO joggingRequestDTO) throws ToptalException {
-        final Jogging selected = joggingRepository.findOne(joggingRequestDTO.getId());
+    public JoggingReponseDto update(final UpdateJogDto updateJogDto) throws ToptalException {
+        final Jogging selected = joggingRepository.findOne(updateJogDto.getId());
         if (selected == null) {
             throw ToptalError.JOGGING_NOT_FOUND.buildException();
         }
-        final Jogging jogging = modelMapper.map(joggingRequestDTO, Jogging.class);
+        final Jogging jogging = modelMapper.map(updateJogDto, Jogging.class);
         final User user = userRepository.findOne(selected.getUser().getId());
-        Location location = locationRepository.findByLocationName(jogging.getLocation().getLocationName());
-        // new location
-        if (location == null) {
-            location = locationRepository.save(jogging.getLocation());
+        if (jogging.getLocation() != null) {
+            Location location = locationRepository.findByLocationName(jogging.getLocation().getLocationName());
+            // new location
+            if (location == null) {
+                location = locationRepository.save(jogging.getLocation());
+            }
+            jogging.setLocation(location);
+        } else {
+            jogging.setLocation(selected.getLocation());
         }
         jogging.setUser(user);
-        jogging.setLocation(location);
 
+        // check for distance
+        if (jogging.getDistance() == null) {
+            jogging.setDistance(selected.getDistance());
+        }
+        // check for date
+        if (jogging.getDate() == null) {
+            jogging.setDate(selected.getDate());
+        }
+        // check for period
+        if (jogging.getPeriodInMinutes() == null) {
+            jogging.setPeriodInMinutes(selected.getPeriodInMinutes());
+        }
         weatherService.getWeather(jogging);
 
         final Pageable pageRequest = new PageRequest(0, Integer.MAX_VALUE);
@@ -128,13 +148,13 @@ public class JoggingServiceImpl implements JoggingService {
 
         final Calendar calendar = Calendar.getInstance();
         for (final Jogging run : all) {
-            calendar.setTimeInMillis(run.getDate().getTime());
+            calendar.setTimeInMillis(run.getDate().getTime().getTime());
             calendar.add(Calendar.MINUTE, run.getPeriodInMinutes());
             // skip the one we are updating now
             if (run.getId().equals(jogging.getId())) {
                 continue;
             }
-            if (run.getDate().before(jogging.getDate()) && calendar.getTime().after(jogging.getDate())
+            if (run.getDate().before(jogging.getDate()) && calendar.getTime().after(jogging.getDate().getTime())
                     || run.getDate().getTime() == jogging.getDate().getTime()) {
                 throw ToptalError.JOGGING_OVERLAPING.buildException();
             }

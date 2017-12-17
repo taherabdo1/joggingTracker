@@ -15,8 +15,8 @@ import com.toptal.demo.controllers.error.ToptalError;
 import com.toptal.demo.controllers.error.ToptalException;
 import com.toptal.demo.controllers.filtter.CriteriaParser;
 import com.toptal.demo.controllers.filtter.UserSpecification;
+import com.toptal.demo.dto.UpdateUserDto;
 import com.toptal.demo.dto.UserDto;
-import com.toptal.demo.dto.UserRequestDto;
 import com.toptal.demo.entities.User;
 import com.toptal.demo.repositories.LoginAttemptRepository;
 import com.toptal.demo.repositories.UserRepository;
@@ -57,9 +57,19 @@ public class UserServiceImpl implements UserService {
             throw ToptalError.JOGGING_VALIDATION_ERROR_PAGE_NUMBER.buildException();
         }
         final Pageable pageable = createPageRequest(pageSize, pageNumer);
-        final List<Object> filterObjects = CriteriaParser.parse(filterBy);
+        List<User> users = null;
+        if (filterBy != "" && filterBy != null) {
+            try {
+                final List<Object> filterObjects = CriteriaParser.parse(filterBy);
+                users = Lists.newArrayList(userRepository.findAll(UserSpecification.getJogSpecification(filterObjects), pageable));
+            } catch (final Exception e) {
+                throw ToptalError.INCORRECT_FILTER_CRITERIA.buildException();
+            }
 
-        final List<User> users = Lists.newArrayList(userRepository.findAll(UserSpecification.getJogSpecification(filterObjects), pageable));
+        } else {// no filter criteria needed
+            users = Lists.newArrayList(userRepository.findAll(null, pageable));
+        }
+
         final List<UserDto> resultList = new ArrayList<>();
         for (final User user : users) {
             resultList.add(modelMapper.map(user, UserDto.class));
@@ -95,16 +105,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(final UserRequestDto userDto) throws ToptalException {
-        final User userFromDB = userRepository.findOneByEmail(userDto.getEmail()).get();
+    public UserDto update(final UpdateUserDto updateUserDto) throws ToptalException {
+        final User userFromDB = userRepository.findOne(updateUserDto.getId());
         if (userFromDB == null) {
             throw ToptalError.USER_NOT_FOUND.buildException();
         }
-        User userToSave = modelMapper.map(userDto, User.class);
+        User userToSave = modelMapper.map(updateUserDto, User.class);
         if (userToSave.getPassword() == "" || userToSave.getPassword() == null) {
             userToSave.setPassword(userFromDB.getPassword());
         }
-        userToSave.setId(userFromDB.getId());
+        if (userToSave.getActivated() == null) {
+            userToSave.setActivated(userFromDB.getActivated());
+        }
+        if (userToSave.getAge() == null) {
+            userToSave.setAge(userFromDB.getAge());
+        }
+        if (userToSave.getCity() == null || userToSave.getCity() == "") {
+            userToSave.setCity(userFromDB.getCity());
+        }
+        if (userToSave.getEmail() == null || userToSave.getEmail() == "") {
+            userToSave.setEmail(userFromDB.getEmail());
+        }
+        if (userToSave.getFullName() == null || userToSave.getEmail() == "") {
+            userToSave.setFullName(userFromDB.getFullName());
+        }
+        if (userToSave.getPassword() == null || userToSave.getPassword() == "") {
+            userToSave.setPassword(userFromDB.getPassword());
+        }
         if (userToSave.getRole() == null) {
             userToSave.setRole(userFromDB.getRole());
         }

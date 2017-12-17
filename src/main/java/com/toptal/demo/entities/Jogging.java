@@ -2,6 +2,7 @@ package com.toptal.demo.entities;
 
 import java.io.Serializable;
 import java.sql.Time;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -34,13 +35,13 @@ public class Jogging implements Serializable {
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    private Calendar date;
 
     // the period to run in minutes
-    int periodInMinutes;
+    private Integer periodInMinutes;
     
     // the distance to run
-    private int distance;
+    private Integer distance;
     
     /**
      *  weather related info, clouds, temperature, windSpead

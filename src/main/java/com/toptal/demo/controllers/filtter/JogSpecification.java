@@ -3,6 +3,8 @@ package com.toptal.demo.controllers.filtter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -57,7 +59,14 @@ public class JogSpecification {
                     // Path<Date> expiryDate = accounts.<Date> get("expiryDate");
 
                     try {
-                        criteria.setValue(simpleDateFormat.parse((String) criteria.getValue()).getTime());
+                        final Date startDate = simpleDateFormat.parse((String) criteria.getValue());
+                        final Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(startDate);
+                        calendar.add(Calendar.DATE, 1);
+                        final Date endDate = calendar.getTime();
+                        return cb.between(root.get("date"), startDate, endDate);// (root.get(criteria.getKey()),
+                                                                                            // criteria.getValue());
+
                     } catch (final ParseException e) {
                         e.printStackTrace();
                     }
@@ -118,9 +127,11 @@ public class JogSpecification {
         if (!(input.get(0) instanceof Specification)) {
             output.add(input.get(0));
         }
-        if (input.get(0) instanceof Specification && input.get(1) instanceof String) {
-            output.add(input.get(0));
-        }
+        // if(input.size() == 1){
+        // output.add(input.get(0));
+        // }else if (input.get(0) instanceof Specification && input.get(1) instanceof String) {
+        // output.add(input.get(0));
+        // }
         for (int i = 0; i < input.size();) {
             if (input.get(i) instanceof String) {
                 // this is a AND/OR operation

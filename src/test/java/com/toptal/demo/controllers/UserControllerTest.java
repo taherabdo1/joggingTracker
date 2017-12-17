@@ -47,15 +47,15 @@ public class UserControllerTest {
 
     @Test
     public void testGetAllUsers() throws ToptalException {
-        userController.getAllUsers(10, 0);
-        verify(userService).getAll(10, 0);
+        userController.getAllUsers(10, 0, null);
+        verify(userService).getAll(10, 0, null);
     }
 
     @Test
     public void testGetAllUsersThrowToptalException() throws ToptalException {
         thrown.expect(ToptalException.class);
-        doThrow(ToptalException.class).when(userService).getAll(10, 0);
-        userController.getAllUsers(10, 0);
+        doThrow(ToptalException.class).when(userService).getAll(10, 0, null);
+        userController.getAllUsers(10, 0, null);
     }
 
     @Test
