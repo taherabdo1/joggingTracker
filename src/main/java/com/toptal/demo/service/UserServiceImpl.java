@@ -2,6 +2,7 @@ package com.toptal.demo.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +89,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByemail(final String email) throws ToptalException {
-        final User user = userRepository.findOneByEmail(email).get();
+        final Optional<User> optionalUser = userRepository.findOneByEmail(email);
+        if (optionalUser == null) {
+            throw ToptalError.USER_NOT_FOUND.buildException();
+        }
+        final User user = optionalUser.get();
         if (user == null) {
             throw ToptalError.USER_NOT_FOUND.buildException();
         }

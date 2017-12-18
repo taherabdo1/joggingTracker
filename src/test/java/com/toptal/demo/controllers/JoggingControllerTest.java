@@ -68,7 +68,7 @@ public class JoggingControllerTest {
     @Test
     public void testUpdate() throws ToptalException {
         doReturn(joggingReponseDto).when(joggingService).update(updateJogDto);
-        final JoggingReponseDto response = joggingController.update(updateJogDto);
+        final JoggingReponseDto response = joggingController.update(updateJogDto, null);
         assertEquals(response.getId().longValue(), joggingReponseDto.getId().longValue());
 
     }
@@ -77,7 +77,7 @@ public class JoggingControllerTest {
     public void testUpdateWithToptalException() throws ToptalException {
         thrown.expect(ToptalException.class);
         doThrow(ToptalException.class).when(joggingService).update(updateJogDto);
-        joggingController.update(updateJogDto);
+        joggingController.update(updateJogDto, null);
     }
 
     @Test

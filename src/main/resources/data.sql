@@ -19,13 +19,13 @@ VALUES (1, '123.23', 'cairo', '1233.222');
 
 -- creat some jogs for testing
 INSERT INTO jogging (id, date,distance, period_in_minutes, location_id, user_id) 
-VALUES (1, '2017-12-12 15:11:26', '100', '10', '1', '1');
+VALUES (1, '2017-12-20 15:11:26', '100', '10', '1', '1');
 
 INSERT INTO jogging (id, date,distance, period_in_minutes, location_id, user_id) 
-VALUES (2, '2017-12-11 15:11:26', '1000', '100', '1', '1');
+VALUES (2, '2017-12-21 15:11:26', '1000', '100', '1', '1');
 
 INSERT INTO jogging (id, date,distance, period_in_minutes, location_id, user_id) 
-VALUES (3,'2017-12-10 15:11:26', '1200', '60', '1', '1');
+VALUES (3,'2017-12-22 15:11:26', '1200', '60', '1', '1');
 
 INSERT INTO jogging (id, date,distance, period_in_minutes, location_id, user_id) 
-VALUES (4, '2017-12-09 15:11:26', '1000', '60', '1', '1');
+VALUES (4, '2017-12-23 15:11:26', '1000', '60', '1', '1');

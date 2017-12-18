@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
@@ -25,7 +26,16 @@ public class ToptalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(ToptalException.class)
     public final ResponseEntity<ToptalErrorReponse> handleException(final ToptalException exception) {
+
         final ToptalError toptalError = exception.getToptalError();
+        // if it is a validation error published from spring and javax validation
+        if (toptalError == null) {
+            final ToptalErrorReponse errorResponse = ToptalErrorReponse.builder().description(exception.getMessage()).error(HttpStatus.BAD_REQUEST.name())
+                    .status(HttpStatus.BAD_REQUEST.name()).build();
+            return new ResponseEntity<ToptalErrorReponse>(errorResponse, HttpStatus.BAD_REQUEST);
+
+        }
+        // the toptal custom handling for the business
         final ToptalErrorReponse errorResponse = ToptalErrorReponse.builder().description(toptalError.getDescription()).error(toptalError.name())
                 .status(toptalError.getHttpStatus().name()).build();
         return new ResponseEntity<ToptalErrorReponse>(errorResponse, toptalError.getHttpStatus());
@@ -33,14 +43,12 @@ public class ToptalExceptionHandler extends ResponseEntityExceptionHandler {
 
 
 
-    // @ExceptionHandler(MethodArgumentNotValidException.class)
-    // public final ResponseEntity<ToptalErrorReponse> handleValidationException(final MethodArgumentNotValidException
-    // exception) {
-    // final ToptalErrorReponse errorResponse =
-    // ToptalErrorReponse.builder().description(exception.getMessage()).error("Validation Error")
-    // .status("BAD REQUEST").build();
-    // return new ResponseEntity<ToptalErrorReponse>(errorResponse, HttpStatus.BAD_REQUEST);
-    // }
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public final ResponseEntity<ToptalErrorReponse> handleValidationException(final MethodArgumentTypeMismatchException exception) {
+        final ToptalErrorReponse errorResponse = ToptalErrorReponse.builder().description(exception.getMessage()).error("Validation Error")
+                .status("BAD REQUEST").build();
+        return new ResponseEntity<ToptalErrorReponse>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(final HttpMessageNotReadableException ex, final HttpHeaders headers, final HttpStatus status,

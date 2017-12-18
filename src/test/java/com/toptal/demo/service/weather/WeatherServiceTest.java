@@ -19,7 +19,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.toptal.demo.controllers.error.ToptalError;
@@ -85,12 +87,13 @@ public class WeatherServiceTest {
 
     @Test
     public void testGetWeatherWithGeneralException() throws ToptalException {
-        thrown.expectMessage(ToptalError.EXTERNAL_SERVICE_ERROR.getDescription());
-        doThrow(new ToptalException(ToptalError.EXTERNAL_SERVICE_ERROR)).when(restTemplate).getForObject(any(), any(), any(), any(), any());
+        thrown.expect(ToptalException.class);
+        doThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND)).when(restTemplate).getForObject(any(), any(), any(), any(),
+                any());
         doReturn("token").when(toptalConfig).getApiToken();
         doReturn("json").when(toptalConfig).getResultMode();
         doReturn("url").when(toptalConfig).getWeatherApiURI();
-        final Jogging jogging = new Jogging(1L, null, 45, 3000, null, null, null, null, null);
+        final Jogging jogging = new Jogging(1L, null, 45, 3000, null, null, null, new Location(1L, 12f, 12f, "cairo", null), null);
 
         weatherService.getWeather(jogging);
     }

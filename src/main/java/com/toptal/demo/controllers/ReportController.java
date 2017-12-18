@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,8 +49,13 @@ public class ReportController {
     @RequestMapping(value = "/averageSpeedAndDistancePerWeek", method = RequestMethod.GET)
     public List<SpeedAndDistanceReportResponse> getAvgSpeedAndDistanceForWeek(
             @Valid @RequestParam(required = true, name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final Date startDate,
-            @Valid @RequestParam(required = true, name = "endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final Date endDate)
+            @Valid @RequestParam(required = true, name = "endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final Date endDate, final Errors errors)
         throws ToptalException {
+
+        if (errors != null && errors.hasErrors()) {
+            throw new ToptalException(errors.toString());
+        }
+
         if (endDate.before(startDate)) {
             throw ToptalError.REPORT_DATES_ERROR_END_DATE_CANT_BE_BEFORE_START_DATE.buildException();
         }

@@ -106,7 +106,7 @@ public class UserControllerTest {
         final UpdateUserDto updateUserDto = new UpdateUserDto(1L, "cairo", true, false, "user1@test.com", Role.ROLE_USER);
         final UserDto userDto = new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER, 20, "test user full name");
         doReturn(userDto).when(userService).update(updateUserDto);
-        final UserDto returnedUserDto = userController.updateUser(updateUserDto);
+        final UserDto returnedUserDto = userController.updateUser(updateUserDto, null);
         assertEquals(returnedUserDto.getEmail(), updateUserDto.getEmail());
     }
 
@@ -115,7 +115,7 @@ public class UserControllerTest {
         final UpdateUserDto updateUserDto = new UpdateUserDto(1L, "cairo", true, false, "user1@test.com", Role.ROLE_USER);
         thrown.expect(ToptalException.class);
         doThrow(ToptalException.class).when(userService).update(any());
-        userController.updateUser(updateUserDto);
+        userController.updateUser(updateUserDto, null);
     }
 
     @Test

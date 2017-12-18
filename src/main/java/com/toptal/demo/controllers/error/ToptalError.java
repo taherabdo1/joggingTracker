@@ -3,6 +3,7 @@ package com.toptal.demo.controllers.error;
 import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public enum ToptalError {
@@ -68,10 +69,13 @@ public enum ToptalError {
         this.httpStatus = httpStatus;
         this.description = description;
     }
+   
     
     public ToptalException buildException() {
         return new ToptalException(this);
     }
+
+
 
 
 }

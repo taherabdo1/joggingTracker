@@ -1,5 +1,7 @@
 package com.toptal.demo.dto;
 
+import javax.validation.constraints.Pattern;
+
 import org.springframework.format.annotation.NumberFormat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,6 +31,7 @@ public class UpdateUserDto {
     private Boolean isBlocked;
 
     @JsonProperty(value = "email", required = false)
+    @Pattern(regexp="^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$")
     private String email;
 
     @JsonProperty(value = "role", required = false)

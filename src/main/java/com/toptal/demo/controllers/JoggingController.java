@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +38,11 @@ public class JoggingController {
     @ApiOperation(value = "create new jogging", code = 201)
     @ApiResponses(value = { @ApiResponse(code = 201, message = "the jogging created successfully") })
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public JoggingReponseDto addNewJogging(@Valid @RequestBody final JoggingRequestDTO joggingRequestDTO) throws ToptalException {
+    public JoggingReponseDto addNewJogging(@Valid @RequestBody final JoggingRequestDTO joggingRequestDTO, final Errors errors) throws ToptalException {
+
+        if (errors != null && errors.hasErrors()) {
+            throw new ToptalException(errors.toString());
+        }
 
         // get the current user
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -56,7 +61,11 @@ public class JoggingController {
     @ApiOperation(value = "update pre-existing jogging", code = 201)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "the jogging updated successfully") })
     @RequestMapping(value = "/", method = RequestMethod.PUT)
-    public JoggingReponseDto update(@Valid @RequestBody final UpdateJogDto updateJogDto) throws ToptalException {
+    public JoggingReponseDto update(@Valid @RequestBody final UpdateJogDto updateJogDto, final Errors errors) throws ToptalException {
+        if (errors != null && errors.hasErrors()) {
+            throw new ToptalException(errors.toString());
+        }
+
         return joggingService.update(updateJogDto);
     }
 
@@ -68,6 +77,7 @@ public class JoggingController {
             @RequestParam(required = false, name = "page") Integer page, @RequestParam(required = false, name = "size") Integer size,
             @RequestParam(required = false, name = "filterBY") final String filterString)
         throws ToptalException {
+
         if (size == null || page == null) {
             size = Integer.MAX_VALUE;
             page = 0;
@@ -79,9 +89,12 @@ public class JoggingController {
     @ApiOperation(value = "get All Jogging for the current user", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "get all the joggings for the current user") })
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
-    public List<JoggingReponseDto> getAll(@RequestParam(required = false, name = "page") Integer page,
-            @RequestParam(required = false, name = "size") Integer size, @RequestParam(required = false, name = "filterBY") final String filterString)
+    public List<JoggingReponseDto> getAll(
+            @RequestParam(required = false, name = "page") @Pattern(regexp = "[\\s]*[0-9]*[1-9]+", message = "page number must be greater than or equal 0") Integer page,
+            @Pattern(regexp = "[\\s]*[0-9]*[1-9]+", message = "size must be positive natual number ") @RequestParam(required = false, name = "size") Integer size,
+            @RequestParam(required = false, name = "filterBY") final String filterString)
         throws ToptalException {
+
         List<JoggingReponseDto> joggingsList;
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         final String email = auth.getName(); // get logged in userEmail

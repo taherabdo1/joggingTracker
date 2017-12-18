@@ -7,7 +7,7 @@ import javax.validation.constraints.Pattern;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,19 +31,15 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/hello")
-    public String helloWorld() {
-        return "hello world";
-    }
-
     @ApiOperation(value = "get all users", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "get all the users") })
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<UserDto> getAllUsers(
             @Pattern(regexp = "[\\s]*[0-9]*[1-9]+", message = "size must be positive natual number ") @RequestParam(required = false, name = "size") Integer pageSize,
-            @Pattern(regexp = "[\\s]*[0-9]*[1-9]+", message = "page number must be greater than or equal 0") @RequestParam(required = false, name = "pageNumber") Integer pageNumer,
+            @Valid @Pattern(regexp = "[\\s]*[0-9]*[1-9]+", message = "page number must be greater than or equal 0") @RequestParam(required = false, name = "pageNumber") Integer pageNumer,
             @RequestParam(required = false, name = "filterBy") final String filterBy)
         throws ToptalException {
+
         if (pageSize == null || pageNumer == null) {
             pageSize = Integer.MAX_VALUE;
             pageNumer = 0;
@@ -78,7 +74,10 @@ public class UserController {
     @ApiOperation(value = "update user", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "the user updated successfully") })
     @RequestMapping(value = "/", method = RequestMethod.PUT)
-    public UserDto updateUser(@RequestBody final UpdateUserDto updateUserDto) throws ToptalException {
+    public UserDto updateUser(@Valid @RequestBody final UpdateUserDto updateUserDto, final Errors errors) throws ToptalException {
+        if (errors != null && errors.hasErrors()) {
+            throw new ToptalException(errors.toString());
+        }
         return userService.update(updateUserDto);
     }
 

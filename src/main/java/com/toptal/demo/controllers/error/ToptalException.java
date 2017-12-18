@@ -12,10 +12,14 @@ public class ToptalException extends Exception{
 
     private ToptalError toptalError;
 
+    private String msg = "";
     public ToptalException(ToptalError toptalError) {
         super(toptalError.getDescription());
         this.toptalError = toptalError;
     }
-    
+    public ToptalException(String message) {
+        super(message);
+        this.msg = message;
+    }
 
 }
