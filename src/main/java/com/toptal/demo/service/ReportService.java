@@ -9,7 +9,7 @@ import com.toptal.demo.dto.SpeedAndDistanceReportResponse;
 
 public interface ReportService {
 
-    public List<SpeedAndDistanceReportResponse> getAgvSpeedAndDistanceForWeek(final String userEmail, Date startDate, Date endDate);
+    public List<SpeedAndDistanceReportResponse> getAgvSpeedAndDistanceForWeek(final String userEmail, Date startDate, Date endDate) throws ToptalException;
 
     public List<SpeedAndDistanceReportResponse> getAvgSpeedAndDistanceForTheLast2WeeksWeek(final String userEmail);
 

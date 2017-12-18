@@ -81,10 +81,10 @@ public class JoggingServiceImpl implements JoggingService {
         // all = getPage(pageRequest, all);
         final Calendar calendar = Calendar.getInstance();
         for (final Jogging run : all) {
-            calendar.setTimeInMillis(run.getDate().getTime().getTime());
+            calendar.setTimeInMillis(run.getDate().getTime());
             calendar.add(Calendar.MINUTE, run.getPeriodInMinutes());
-            if (run.getDate().before(jogging.getDate().getTime()) && calendar.getTime().after(jogging.getDate().getTime())
-                    || run.getDate().getTime().getTime() == jogging.getDate().getTime().getTime()) {
+            if (run.getDate().before(jogging.getDate()) && calendar.getTime().after(jogging.getDate())
+                    || run.getDate().getTime() == jogging.getDate().getTime()) {
                 throw ToptalError.JOGGING_OVERLAPING.buildException();
             }
         }
@@ -147,14 +147,14 @@ public class JoggingServiceImpl implements JoggingService {
 
         final Calendar calendar = Calendar.getInstance();
         for (final Jogging run : all) {
-            calendar.setTimeInMillis(run.getDate().getTime().getTime());
+            calendar.setTime(run.getDate());
             calendar.add(Calendar.MINUTE, run.getPeriodInMinutes());
             // skip the one we are updating now
             if (run.getId().equals(jogging.getId())) {
                 continue;
             }
-            if (run.getDate().before(jogging.getDate()) && calendar.getTime().after(jogging.getDate().getTime())
-                    || run.getDate().getTime().getTime() == jogging.getDate().getTime().getTime()) {
+            if (run.getDate().before(jogging.getDate()) && calendar.getTime().after(jogging.getDate())
+                    || run.getDate().getTime() == jogging.getDate().getTime()) {
                 throw ToptalError.JOGGING_OVERLAPING.buildException();
             }
         }

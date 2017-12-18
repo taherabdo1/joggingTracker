@@ -35,7 +35,7 @@ public class Jogging implements Serializable {
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Calendar date;
+    private Date date;
 
     // the period to run in minutes
     private Integer periodInMinutes;

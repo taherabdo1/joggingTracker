@@ -65,7 +65,7 @@ public class WeatherServiceTest {
 
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(sdf.parse("2017-12-12 15:10:00"));
-        final Jogging jogging = new Jogging(1L, calendar, 45, 3000, null, null, null, null, null);
+        final Jogging jogging = new Jogging(1L, calendar.getTime(), 45, 3000, null, null, null, null, null);
         jogging.setLocation(location);
         weatherService.getWeather(jogging);
         assertNotNull(jogging.getWeatherDescription());

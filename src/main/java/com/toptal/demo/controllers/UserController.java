@@ -82,7 +82,7 @@ public class UserController {
     @ApiOperation(value = "Re-activate blocked user by giving userId", code = 204)
     @ApiResponses(value = { @ApiResponse(code = 204, message = "the user re-activated successfully") })
     @RequestMapping(value = "/reacivate_user/{userId}", method = RequestMethod.PUT)
-    public UserDto reactivate(@PathVariable("userId") final Long userId) {
+    public UserDto reactivate(@PathVariable("userId") final Long userId) throws ToptalException {
         return userService.reactivate(userId);
     }
 

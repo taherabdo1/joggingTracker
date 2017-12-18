@@ -8,13 +8,13 @@ import com.toptal.demo.dto.UserDto;
 
 public interface UserService {
 
-    UserDto reactivate(final Long userId);
+    UserDto reactivate(final Long userId) throws ToptalException;
 
     UserDto getUserByemail(String email) throws ToptalException;
 
     UserDto getUserByID(long id) throws ToptalException;
 
-    void delete(long id) throws ToptalException;
+    Boolean delete(long id) throws ToptalException;
 
     UserDto update(UpdateUserDto updateUserDto) throws ToptalException;
 

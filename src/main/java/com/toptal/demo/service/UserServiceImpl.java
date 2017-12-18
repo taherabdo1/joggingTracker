@@ -17,6 +17,7 @@ import com.toptal.demo.controllers.filtter.CriteriaParser;
 import com.toptal.demo.controllers.filtter.UserSpecification;
 import com.toptal.demo.dto.UpdateUserDto;
 import com.toptal.demo.dto.UserDto;
+import com.toptal.demo.entities.LoginAttempt;
 import com.toptal.demo.entities.User;
 import com.toptal.demo.repositories.LoginAttemptRepository;
 import com.toptal.demo.repositories.UserRepository;
@@ -34,9 +35,17 @@ public class UserServiceImpl implements UserService {
     ModelMapper modelMapper;
 
     @Override
-    public UserDto reactivate(final Long userId) {
+    public UserDto reactivate(final Long userId) throws ToptalException {
         final User userToReactivate = userRepository.findOne(userId);
-        userToReactivate.getLoginAttempt().setNumberOfTrials(0);
+        if (!userToReactivate.isBlocked()) {
+            throw ToptalError.USER_NOT_BLOCKED.buildException();
+        }
+        if (userToReactivate.getLoginAttempt() != null) {
+            userToReactivate.getLoginAttempt().setNumberOfTrials(0);
+        } else {
+            final LoginAttempt loginAttempt = new LoginAttempt();
+            userToReactivate.setLoginAttempt(loginAttempt);
+        }
         userToReactivate.setBlocked(false);
         // re-initialise the login trials for this user
         loginAttemptRepository.save(userToReactivate.getLoginAttempt());
@@ -96,12 +105,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(final long id) throws ToptalException {
+    public Boolean delete(final long id) throws ToptalException {
         final User user = userRepository.findOne(id);
         if (user == null) {
             throw ToptalError.USER_NOT_FOUND.buildException();
         }
         userRepository.delete(id);
+        return true;
     }
 
     @Override

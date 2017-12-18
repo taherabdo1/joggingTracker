@@ -19,6 +19,9 @@ public enum ToptalError {
     /** the user is not found*/
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER with this email is not found in our system"),
 
+    /** the user is not blocked*/
+    USER_NOT_BLOCKED(HttpStatus.NOT_FOUND, "this user is not blocked"),
+
     /** BAD Request*/
     JOGGING_VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "there is validation error, please re-check the request body you sent"),
 
@@ -30,6 +33,9 @@ public enum ToptalError {
 
     /** filter String is not balanced */
     JOGGING_VALIDATION_ERROR_NOT_BALANCED_FILTER_STRING(HttpStatus.BAD_REQUEST,"filter string (parenthesis) is not balanced"),
+
+    /** User doesn't have Jogs */
+    USER_DOES_NOT_HAVE_JOGS(HttpStatus.NO_CONTENT,"user doesn't have jogs till now"),
 
     /** filter String is not balanced */
     JOGGING_VALIDATION_ERROR_NOT_BAD_REPORT_REQUEST_DATA(HttpStatus.BAD_REQUEST, "bad data for generating a report"),

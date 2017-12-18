@@ -90,11 +90,13 @@ public class JoggingServiceTest {
 
     Calendar calendar = Calendar.getInstance();
 
-    final Jogging jogging = new Jogging(null, calendar, 45, 4000, "WEATHER desctiption", "temprature", "1.2", location, user);
+    final Date DATE = new Date();
 
-    final Jogging savedJogging = new Jogging(1L, calendar, 45, 4000, "WEATHER desctiption", "temprature", "1.2", location, user);
+    final Jogging jogging = new Jogging(null, calendar.getTime(), 45, 4000, "WEATHER desctiption", "temprature", "1.2", location, user);
 
-    final Jogging updateJogging = new Jogging(1L, calendar, 90, 8000, "WEATHER desctiption", "temprature", "1.2", location, user);
+    final Jogging savedJogging = new Jogging(1L, calendar.getTime(), 45, 4000, "WEATHER desctiption", "temprature", "1.2", location, user);
+
+    final Jogging updateJogging = new Jogging(1L, calendar.getTime(), 90, 8000, "WEATHER desctiption", "temprature", "1.2", location, user);
 
     final UpdateJogDto updateJogDto = new UpdateJogDto(1l, new Date(), 50, 1000, locationDto);
 
@@ -103,7 +105,7 @@ public class JoggingServiceTest {
 
     @Before
     public void init() {
-        calendar.setTime(new Date());
+        calendar.setTime(DATE);
     }
     @Test
     public void testaddNewJogging() throws ToptalException{
@@ -180,7 +182,7 @@ public class JoggingServiceTest {
     public void testUpdateWithOverlappingException() throws ToptalException {
         final java.util.List<Jogging> jogs = new ArrayList<Jogging>();
 
-        jogs.add(new Jogging(2L, calendar, 90, 8000, "WEATHER desctiption", "temprature", "1.2", location, user));
+        jogs.add(new Jogging(2L, calendar.getTime(), 90, 8000, "WEATHER desctiption", "temprature", "1.2", location, user));
         thrown.expectMessage(ToptalError.JOGGING_OVERLAPING.getDescription());
 
         doReturn(savedJogging).when(joggingRepository).findOne(1L);
@@ -199,7 +201,7 @@ public class JoggingServiceTest {
         doReturn(Optional.of(user)).when(userRepository).findOneByEmail(USER_EMAIL);
         doReturn(buildJogsList()).when(joggingRepository).findAll(createPageRequest(10, 0));
         doReturn(updatedJoggingReponseDto).when(modelMapper)
-                .map(new Jogging(1L, calendar, 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
+                .map(new Jogging(1L, calendar.getTime(), 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
 
         final List<JoggingReponseDto> response = joggingService.getAllForAuser(USER_EMAIL, 0, 10, "");
         assertNotNull(response);
@@ -213,7 +215,7 @@ public class JoggingServiceTest {
         doReturn(Optional.of(user)).when(userRepository).findOneByEmail(USER_EMAIL);
         doReturn(buildJogsList()).when(joggingRepository).findAll(any(Specification.class), any(Pageable.class));
         doReturn(updatedJoggingReponseDto).when(modelMapper)
-                .map(new Jogging(1L, calendar, 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
+                .map(new Jogging(1L, calendar.getTime(), 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
 
         final List<JoggingReponseDto> response = joggingService.getAllForAuser(USER_EMAIL, 0, 10, "(id eq 1)");
         assertNotNull(response);
@@ -228,7 +230,7 @@ public class JoggingServiceTest {
         doReturn(Optional.of(user)).when(userRepository).findOneByEmail(USER_EMAIL);
         doReturn(buildJogsList()).when(joggingRepository).findAll(any(Specification.class), any(Pageable.class));
         doReturn(updatedJoggingReponseDto).when(modelMapper)
-                .map(new Jogging(1L, calendar, 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
+                .map(new Jogging(1L, calendar.getTime(), 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
 
         final List<JoggingReponseDto> response = joggingService.getAllForAuser(USER_EMAIL, 0, 10, "(((id eq 1))");
         assertNotNull(response);
@@ -239,7 +241,7 @@ public class JoggingServiceTest {
     public void testgetAll() throws ToptalException {
         doReturn(buildJogsList()).when(joggingRepository).findAll(createPageRequest(10, 0));
         doReturn(updatedJoggingReponseDto).when(modelMapper)
-                .map(new Jogging(1L, calendar, 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
+                .map(new Jogging(1L, calendar.getTime(), 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
 
         final List<JoggingReponseDto> response = joggingService.getAll(0, 10, "");
         assertNotNull(response);
@@ -252,7 +254,7 @@ public class JoggingServiceTest {
 
         doReturn(buildJogsList()).when(joggingRepository).findAll(any(Specification.class), any(Pageable.class));
         doReturn(updatedJoggingReponseDto).when(modelMapper)
-                .map(new Jogging(1L, calendar, 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
+                .map(new Jogging(1L, calendar.getTime(), 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
 
         final List<JoggingReponseDto> response = joggingService.getAll(0, 10, "(id eq 1)");
         assertNotNull(response);
@@ -266,7 +268,7 @@ public class JoggingServiceTest {
 
         doReturn(buildJogsList()).when(joggingRepository).findAll(any(Specification.class), any(Pageable.class));
         doReturn(updatedJoggingReponseDto).when(modelMapper)
-                .map(new Jogging(1L, calendar, 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
+                .map(new Jogging(1L, calendar.getTime(), 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user), JoggingReponseDto.class);
 
         final List<JoggingReponseDto> response = joggingService.getAll(0, 10, "(((id eq 1))");
         assertNotNull(response);
@@ -292,7 +294,7 @@ public class JoggingServiceTest {
 
     private Page<Jogging> buildJogsList() {
         final List<Jogging> jogs = new ArrayList<>();
-        jogs.add(new Jogging(1L, calendar, 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user));
+        jogs.add(new Jogging(1L, calendar.getTime(), 30, 8000, "WEATHER desctiption", "temprature", "1.2", location, user));
         final PageImpl<Jogging> jogsPage = new PageImpl<>(jogs, createPageRequest(10, 0), 10);
         return jogsPage;
     }

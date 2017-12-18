@@ -52,8 +52,8 @@ public class WeatherService {
         final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (final ListElement listElement : weatherDto.getList()) {
             try {
-                if (format.parse(listElement.getDtTxt()).getTime() - jogging.getDate().getTime().getTime() >= 0
-                        && format.parse(listElement.getDtTxt()).getTime() - jogging.getDate().getTime().getTime() <= 3 * 1000 * 60 * 60) {
+                if (format.parse(listElement.getDtTxt()).getTime() - jogging.getDate().getTime() >= 0
+                        && format.parse(listElement.getDtTxt()).getTime() - jogging.getDate().getTime() <= 3 * 1000 * 60 * 60) {
                     return listElement;
                 }
             } catch (final ParseException e) {

@@ -96,9 +96,6 @@ public class UserSpecification {
         if (!(input.get(0) instanceof Specification)) {
             output.add(input.get(0));
         }
-        // if (input.get(0) instanceof Specification && input.get(1) instanceof String) {
-        // output.add(input.get(0));
-        // }
         for (int i = 0; i < input.size();) {
             if (input.get(i) instanceof String) {
                 // this is a AND/OR operation

@@ -15,7 +15,6 @@ public class CriteriaParser {
 
         Pattern.compile("^\\((\\w+)\\s*(eq|ne|gt|lt)\\s*(\\p{Punct}?)([\\w\\W]+)(\\p{Punct}?)\\)\\s*$");
 
-        // String filtterString = "(date eq '2016-05-01') AND ((distance gt 20) OR (distance lt 10))";
         filtterString = filtterString.replace("'", "");
         final List<Object> tokens = new ArrayList<Object>();
 
@@ -48,7 +47,6 @@ public class CriteriaParser {
                 specs.add(tokens.get(i));
                 i++;
             }
-            System.out.println(specs);
         }
         // add the last ")"
         if (tokens.get(tokens.size() - 1) instanceof Character && (char) tokens.get(tokens.size() - 1) == ')') {
