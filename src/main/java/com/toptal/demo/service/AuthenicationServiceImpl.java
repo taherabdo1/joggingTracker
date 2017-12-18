@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.toptal.demo.controllers.error.ToptalError;
@@ -21,6 +20,7 @@ import com.toptal.demo.repositories.LoginAttemptRepository;
 import com.toptal.demo.repositories.UserRepository;
 import com.toptal.demo.security.response.session.OperationResponse.ResponseStatusEnum;
 import com.toptal.demo.security.response.session.SessionResponse;
+import com.toptal.demo.util.ToptalConfig;
 
 @Service
 public class AuthenicationServiceImpl implements AuthenicationService {
@@ -40,14 +40,17 @@ public class AuthenicationServiceImpl implements AuthenicationService {
     @Autowired
     EmailServiceImpl emailService;
 
-    @Value("${running.host}")
-    String hostName;
+    @Autowired
+    ToptalConfig toptalConfig;
 
-    @Value("${activate.mail.message}")
-    String message;
-
-    @Value("${activate.mail.message.footer}")
-    String messageFooter;
+    // @Value("${running.host}")
+    // String hostName;
+    //
+    // @Value("${activate.mail.message}")
+    // String message;
+    //
+    // @Value("${activate.mail.message.footer}")
+    // String messageFooter;
 
     private final String WELCOME_EMAIL_SUBJECT = "Welcome! confirm your email";
 
@@ -103,10 +106,10 @@ public class AuthenicationServiceImpl implements AuthenicationService {
 
     private String buildVerificationMail(final String uuid) {
         final StringBuilder textBiulder = new StringBuilder();
-        textBiulder.append(message);
-        textBiulder.append(hostName);
+        textBiulder.append(toptalConfig.getMessage());
+        textBiulder.append(toptalConfig.getHostName());
         textBiulder.append("activate/" + uuid + "\n");
-        textBiulder.append(messageFooter);
+        textBiulder.append(toptalConfig.getMessageFooter());
 
         return textBiulder.toString();
     }

@@ -18,5 +18,15 @@ public class ToptalConfig {
 
     @Value("${weather.api.rest.token}")
     String apiToken;
+    
+    @Value("${running.host}")
+    String hostName;
+
+    @Value("${activate.mail.message}")
+    String message;
+
+    @Value("${activate.mail.message.footer}")
+    String messageFooter;
+
 
 }

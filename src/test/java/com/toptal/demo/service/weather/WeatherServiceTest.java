@@ -1,8 +1,10 @@
 package com.toptal.demo.service.weather;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,6 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
+import com.toptal.demo.controllers.error.ToptalError;
 import com.toptal.demo.controllers.error.ToptalException;
 import com.toptal.demo.entities.Jogging;
 import com.toptal.demo.entities.Location;
@@ -43,13 +48,15 @@ public class WeatherServiceTest {
     @Mock
     ToptalConfig toptalConfig;
 
+    @Rule
+    public ExpectedException thrown = none();
+
     @Test
     public void testGetWeather() throws ToptalException, ParseException {
         doReturn(getWeatherDto()).when(restTemplate).getForObject(any(), any(), any(), any(), any());
         doReturn("token").when(toptalConfig).getApiToken();
         doReturn("json").when(toptalConfig).getResultMode();
         doReturn("url").when(toptalConfig).getWeatherApiURI();
-        doReturn(getWeatherDto()).when(restTemplate).getForObject(any(), any(), any(), any(), any());
 
         final Location location = new Location();
         location.setId(1l);
@@ -64,6 +71,29 @@ public class WeatherServiceTest {
         assertNotNull(jogging.getWeatherDescription());
     }
 
+    @Test
+    public void testGetWeatherWithCityNotFoundException() throws ToptalException {
+        thrown.expectMessage(ToptalError.CITY_NOT_FOUND.getDescription());
+        doThrow(new ToptalException(ToptalError.CITY_NOT_FOUND)).when(restTemplate).getForObject(any(), any(), any(), any(), any());
+        doReturn("token").when(toptalConfig).getApiToken();
+        doReturn("json").when(toptalConfig).getResultMode();
+        doReturn("url").when(toptalConfig).getWeatherApiURI();
+        final Jogging jogging = new Jogging(1L, null, 45, 3000, null, null, null, null, null);
+
+        weatherService.getWeather(jogging);
+    }
+
+    @Test
+    public void testGetWeatherWithGeneralException() throws ToptalException {
+        thrown.expectMessage(ToptalError.EXTERNAL_SERVICE_ERROR.getDescription());
+        doThrow(new ToptalException(ToptalError.EXTERNAL_SERVICE_ERROR)).when(restTemplate).getForObject(any(), any(), any(), any(), any());
+        doReturn("token").when(toptalConfig).getApiToken();
+        doReturn("json").when(toptalConfig).getResultMode();
+        doReturn("url").when(toptalConfig).getWeatherApiURI();
+        final Jogging jogging = new Jogging(1L, null, 45, 3000, null, null, null, null, null);
+
+        weatherService.getWeather(jogging);
+    }
     private WeatherDto getWeatherDto() {
         final WeatherDto weatherDto = new WeatherDto();
         final List<ListElement> weatherElements = new ArrayList<>();

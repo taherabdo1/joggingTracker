@@ -24,6 +24,7 @@ import com.toptal.demo.controllers.error.ToptalException;
 import com.toptal.demo.dto.JoggingReponseDto;
 import com.toptal.demo.dto.JoggingRequestDTO;
 import com.toptal.demo.dto.LocationDto;
+import com.toptal.demo.dto.UpdateJogDto;
 import com.toptal.demo.service.JoggingService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,10 +42,11 @@ public class JoggingControllerTest {
 
     final LocationDto locationDto = new LocationDto(123.2f, 123.3f, "cairo");
 
-    final JoggingRequestDTO joggingRequestDTO = new JoggingRequestDTO(1L, new Date(), 45, 4000, locationDto);
+    final JoggingRequestDTO joggingRequestDTO = new JoggingRequestDTO(new Date(), 45, 4000, locationDto);
 
     final JoggingReponseDto joggingReponseDto = new JoggingReponseDto(1L, new Date(), 45, 4000, "WEATHER desctiption", "temprature", "1.2", locationDto, 5.5);
 
+    final UpdateJogDto updateJogDto = new UpdateJogDto(1l, new Date(), 50, 1000, locationDto);
     final String EMAIL = "test@demo.com";
 
     @Test
@@ -65,17 +67,17 @@ public class JoggingControllerTest {
 
     @Test
     public void testUpdate() throws ToptalException {
-        doReturn(joggingReponseDto).when(joggingService).update(joggingRequestDTO);
-        final JoggingReponseDto response = joggingController.update(joggingRequestDTO);
-        assertEquals(response.getId().longValue(), joggingRequestDTO.getId());
+        doReturn(joggingReponseDto).when(joggingService).update(updateJogDto);
+        final JoggingReponseDto response = joggingController.update(updateJogDto);
+        assertEquals(response.getId().longValue(), joggingReponseDto.getId().longValue());
 
     }
 
     @Test
     public void testUpdateWithToptalException() throws ToptalException {
         thrown.expect(ToptalException.class);
-        doThrow(ToptalException.class).when(joggingService).update(joggingRequestDTO);
-        joggingController.update(joggingRequestDTO);
+        doThrow(ToptalException.class).when(joggingService).update(updateJogDto);
+        joggingController.update(updateJogDto);
     }
 
     @Test

@@ -36,7 +36,6 @@ public class CriteriaParser {
                 tokens.add(current.trim());
             }
 
-            System.out.println(tokens);
         }
 
         final List<Object> specs = new ArrayList<>();

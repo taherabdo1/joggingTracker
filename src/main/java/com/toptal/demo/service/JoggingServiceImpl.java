@@ -63,10 +63,9 @@ public class JoggingServiceImpl implements JoggingService {
 
         // add the user to the new jogging
         jogging.setUser(user);
-        // Calendar calendar = Calendar.getInstance();
-        // calendar.setTimeZone(TimeZone.);
-        // jogging.getDate()
+
         Location location = locationRepository.findByLocationName(jogging.getLocation().getLocationName());
+
         // if it is a new location for the system add it
         if (null == location) {
             location = locationRepository.save(jogging.getLocation());
@@ -84,8 +83,8 @@ public class JoggingServiceImpl implements JoggingService {
         for (final Jogging run : all) {
             calendar.setTimeInMillis(run.getDate().getTime().getTime());
             calendar.add(Calendar.MINUTE, run.getPeriodInMinutes());
-            if (run.getDate().before(jogging.getDate()) && calendar.getTime().after(jogging.getDate().getTime())
-                    || run.getDate().getTime() == jogging.getDate().getTime()) {
+            if (run.getDate().before(jogging.getDate().getTime()) && calendar.getTime().after(jogging.getDate().getTime())
+                    || run.getDate().getTime().getTime() == jogging.getDate().getTime().getTime()) {
                 throw ToptalError.JOGGING_OVERLAPING.buildException();
             }
         }
@@ -155,7 +154,7 @@ public class JoggingServiceImpl implements JoggingService {
                 continue;
             }
             if (run.getDate().before(jogging.getDate()) && calendar.getTime().after(jogging.getDate().getTime())
-                    || run.getDate().getTime() == jogging.getDate().getTime()) {
+                    || run.getDate().getTime().getTime() == jogging.getDate().getTime().getTime()) {
                 throw ToptalError.JOGGING_OVERLAPING.buildException();
             }
         }
@@ -186,7 +185,6 @@ public class JoggingServiceImpl implements JoggingService {
         if (filterBy != "" && filterBy != null) {
             try {
                 final List<Object> filterObjects = CriteriaParser.parse(filterBy);
-                JogSpecification.getJogSpecification(filterObjects);
                 final Specification<Jogging> userSpecification = new Specification<Jogging>() {
                     
                     @Override
@@ -264,20 +262,6 @@ public class JoggingServiceImpl implements JoggingService {
 
     private Pageable createPageRequest(final int pageSize, final int pageNumber) {
         return new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "id");
-    }
-
-    private List<Jogging> getPage(final Pageable pageable, final List<Jogging> jogs) {
-        final int lowerLimit = 0;
-        int upperLimit = 0;
-        if ((pageable.getPageNumber() + 1) * pageable.getPageSize() > jogs.size()) {
-            upperLimit = jogs.size();
-        }
-        if (pageable.getPageNumber() * pageable.getPageSize() > jogs.size()) {
-            return new ArrayList();
-        }
-        List<Jogging> returnJogs = null;
-        returnJogs = jogs.subList(lowerLimit, upperLimit);
-        return returnJogs;
     }
 
 }

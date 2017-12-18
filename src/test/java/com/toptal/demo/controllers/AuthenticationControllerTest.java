@@ -61,7 +61,6 @@ public class AuthenticationControllerTest {
     public void testActivateAccount() throws ToptalException {
         authenticationController.activateAccount(ACTIVATION_KEY);
         verify(authenticationService).activateAccount(ACTIVATION_KEY);
-
     }
 
     @Test

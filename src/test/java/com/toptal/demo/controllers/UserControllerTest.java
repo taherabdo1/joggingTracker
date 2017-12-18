@@ -21,8 +21,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.toptal.demo.controllers.error.ToptalException;
+import com.toptal.demo.dto.UpdateUserDto;
 import com.toptal.demo.dto.UserDto;
-import com.toptal.demo.dto.UserRequestDto;
 import com.toptal.demo.entities.enums.Role;
 import com.toptal.demo.service.UserServiceImpl;
 
@@ -103,19 +103,19 @@ public class UserControllerTest {
 
     @Test
     public void testUpdateUser() throws ToptalException {
-        final UserRequestDto userRequestDto = new UserRequestDto("cairo", true, false, "user1@test.com", Role.ROLE_USER);
+        final UpdateUserDto updateUserDto = new UpdateUserDto(1L, "cairo", true, false, "user1@test.com", Role.ROLE_USER);
         final UserDto userDto = new UserDto(1L, "token", "cairo", true, false, "user1@test.com", Role.ROLE_USER, 20, "test user full name");
-        doReturn(userDto).when(userService).update(userRequestDto);
-        final UserDto returnedUserDto = userController.updateUser(userRequestDto);
-        assertEquals(returnedUserDto.getEmail(), userRequestDto.getEmail());
+        doReturn(userDto).when(userService).update(updateUserDto);
+        final UserDto returnedUserDto = userController.updateUser(updateUserDto);
+        assertEquals(returnedUserDto.getEmail(), updateUserDto.getEmail());
     }
 
     @Test
     public void testUpdateUserThrowToptalException() throws ToptalException {
-        final UserRequestDto userRequestDto = new UserRequestDto("cairo", true, false, "user1@test.com", Role.ROLE_USER);
+        final UpdateUserDto updateUserDto = new UpdateUserDto(1L, "cairo", true, false, "user1@test.com", Role.ROLE_USER);
         thrown.expect(ToptalException.class);
         doThrow(ToptalException.class).when(userService).update(any());
-        userController.updateUser(userRequestDto);
+        userController.updateUser(updateUserDto);
     }
 
     @Test

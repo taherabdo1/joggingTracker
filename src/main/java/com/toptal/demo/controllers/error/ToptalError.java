@@ -47,9 +47,11 @@ public enum ToptalError {
     INCORRECT_FILTER_CRITERIA(HttpStatus.BAD_REQUEST, "incorrect filter criteria, please recheck"),
     
     /** incorrect filter criteria */
-    EXTERNAL_SERVICE_ERROR(HttpStatus.NOT_FOUND, "can't get the weather info from the external service");
+    EXTERNAL_SERVICE_ERROR(HttpStatus.NOT_FOUND, "can't get the weather info from the external service"),
     
-    
+    /** incorrect filter criteria */
+    MAIL_SERVICE_ERROR(HttpStatus.BAD_REQUEST, "can't send the confirmation mail to the user, check the email again");
+        
     /** The http status. */
     private HttpStatus httpStatus;
 

@@ -23,15 +23,6 @@ public class WeatherService {
 
     @Autowired
     ToptalConfig toptalconfig;
-    
-//    @Value("${weather.api.rest.uri}")
-//    String weatherApiURI;
-//
-//    @Value("${weather.api.rest.result.mode}")
-//    String resultMode;
-//
-//    @Value("${weather.api.rest.token}")
-//    String apiToken;
 
     @Autowired
     RestTemplate restTemplate;

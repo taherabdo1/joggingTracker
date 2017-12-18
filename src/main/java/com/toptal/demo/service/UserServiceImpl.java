@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
         if (userToSave.getPassword() == "" || userToSave.getPassword() == null) {
             userToSave.setPassword(userFromDB.getPassword());
         }
-        if (userToSave.getActivated() == null) {
+        if (updateUserDto.getActivated() == null) {
             userToSave.setActivated(userFromDB.getActivated());
         }
         if (userToSave.getAge() == null) {
