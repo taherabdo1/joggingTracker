@@ -1,6 +1,8 @@
 
 package com.toptal.demo.dto;
 
+import javax.validation.constraints.Pattern;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -13,8 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserSignUpDto {
 
-    @JsonFormat(pattern="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
+    @JsonFormat(pattern="^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$")
     @ApiModelProperty(example = "userx@demo.com", required = true)
+    @Pattern(regexp="^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$")
     private String email = "";
 
     @ApiModelProperty(example = "password", required = true)

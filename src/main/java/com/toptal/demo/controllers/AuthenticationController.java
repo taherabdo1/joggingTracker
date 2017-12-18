@@ -2,6 +2,7 @@ package com.toptal.demo.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -35,13 +36,13 @@ public class AuthenticationController {
             @ApiResponse(code = 200, message = "Will return a security token, which must be passed in every request", response = SessionResponse.class) })
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     @ResponseBody
-    public void authenticate(@RequestBody final Login login, final HttpServletRequest request, final HttpServletResponse response) {
+    public void authenticate(@Valid @RequestBody final Login login, final HttpServletRequest request, final HttpServletResponse response) {
     }
 
     @ApiResponses(value = { @ApiResponse(code = 201, message = "", response = SessionResponse.class) })
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     @ResponseBody
-    public SessionResponse signup(@RequestBody final UserSignUpDto userInfo)
+    public SessionResponse signup(@Valid @RequestBody final UserSignUpDto userInfo)
         throws ToptalException {
         return authenicationService.signup(userInfo);
     }

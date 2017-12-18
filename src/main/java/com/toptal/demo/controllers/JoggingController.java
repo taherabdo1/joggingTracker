@@ -64,7 +64,7 @@ public class JoggingController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "get all the joggings for a user") })
     @RequestMapping(value = "/getAllForUser/{userEmail}", method = RequestMethod.GET)
     public List<JoggingReponseDto> getAllForAuser(
-            @Valid @Pattern(regexp = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$") @PathVariable(name = "userEmail") final String userEmail,
+            @Pattern(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$") @Valid @PathVariable(name = "userEmail") final String userEmail,
             @RequestParam(required = false, name = "page") Integer page, @RequestParam(required = false, name = "size") Integer size,
             @RequestParam(required = false, name = "filterBY") final String filterString)
         throws ToptalException {

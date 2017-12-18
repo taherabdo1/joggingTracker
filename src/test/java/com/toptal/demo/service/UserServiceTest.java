@@ -76,7 +76,7 @@ public class UserServiceTest {
     final UserDto updatedUserDto = new UserDto(1L, "token", "cairo", true, false, "updatedTest@demo.com", Role.ROLE_USER, 25, "test test test");
 
     @Test
-    public void testReactivate() {
+    public void testReactivate() throws ToptalException {
         doReturn(user).when(userRepository).findOne(USER_ID);
         doReturn(reactivatedUser).when(userRepository).save(user);
 

@@ -5,13 +5,13 @@
 -- Create 3 users
 
 insert into user (id,age,city, activated, is_blocked, password, email, role) values 
-(1,20,'cairo', true, false,'user01pw', 'user01', 'ROLE_USER');
+(1,20,'cairo', true, false,'user01pw', 'user01@test.com', 'ROLE_USER');
 
 insert into user (id,age,city, activated, is_blocked, password, email, role) values 
-(2,20,'cairo', true, false, 'user02pw', 'user02', 'ROLE_MANAGER');
+(2,20,'cairo', true, false, 'user02pw', 'user02@test.com', 'ROLE_MANAGER');
 
 insert into user (id,age,city, activated, is_blocked, password, email, role) values 
-(3,20,'cairo', true, false, 'user03pw', 'user03', 'ROLE_ADMIN');
+(3,20,'cairo', true, false, 'user03pw', 'user03@test.com', 'ROLE_ADMIN');
 
 --create location
 INSERT INTO location (id, latitutde, location_name, longtude) 

@@ -2,6 +2,7 @@ package com.toptal.demo.controllers;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.core.Response;
 
@@ -53,7 +54,9 @@ public class UserController {
     @ApiOperation(value = "get user by email", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "get user by email") })
     @RequestMapping(value = "/getByEmail/{userEmail}", method = RequestMethod.GET)
-    public UserDto getUserByEmail(@PathVariable(name = "userEmail") final String email) throws ToptalException {
+    public UserDto getUserByEmail(
+            @PathVariable(name = "userEmail") @Pattern(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$") @Valid final String email)
+        throws ToptalException {
         return userService.getUserByemail(email);
     }
 
