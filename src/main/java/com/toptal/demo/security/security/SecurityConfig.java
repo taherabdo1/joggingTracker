@@ -56,16 +56,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .addFilterBefore(new VerifyTokenFilter(tokenUtil), UsernamePasswordAuthenticationFilter.class).authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/activate/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/signup").permitAll()
-                .antMatchers(HttpMethod.POST, "/joggings/add", "/reports/averageSpeedAndDistancePerWeek", "/reports/getFastestSlowestRun",
+                .antMatchers(HttpMethod.POST, "/joggings/", "/reports/averageSpeedAndDistancePerWeek", "/reports/getFastestSlowestRun",
                         "/reports/getDayWithTheGreatestDistanceRan", "/reports/gettotalTimeSpentJogging")
                 .hasAnyRole("ADMIN", "USER")
-                .antMatchers(HttpMethod.GET, "/joggings/get/{joggingId}", "/joggings/getAll").hasAnyRole("ADMIN", "USER")
-                .antMatchers(HttpMethod.DELETE, "/joggings/delete/{joggingId}").hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.PUT, "/joggings/update")
-                .hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.GET, "/users/getAll", "/users/getByEmail/{userEmail}", "/users/getById/{ID}")
+                .antMatchers(HttpMethod.GET, "/joggings/{joggingId}", "/joggings/getAll").hasAnyRole("ADMIN", "USER")
+                .antMatchers(HttpMethod.DELETE, "/joggings/{joggingId}").hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.PUT, "/joggings/")
+                .hasAnyRole("ADMIN", "USER").antMatchers(HttpMethod.GET, "/users/", "/users/getByEmail/{userEmail}", "/users/getById/{ID}")
                 .hasAnyRole("ADMIN", "MANAGER")
                 .antMatchers(HttpMethod.GET, "/joggings/getAllForUser/{userEmail}").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/users/reacivate_user", "/update").hasAnyRole("ADMIN", "MANAGER")
-                .antMatchers(HttpMethod.DELETE, "/users/delete/{ID}").hasAnyRole("ADMIN", "MANAGER")
+                .antMatchers(HttpMethod.PUT, "/users/reacivate_user/{userId}", "/users/").hasAnyRole("ADMIN", "MANAGER")
+                .antMatchers(HttpMethod.DELETE, "/users/{ID}").hasAnyRole("ADMIN", "MANAGER")
                 .anyRequest().authenticated();
     }
 

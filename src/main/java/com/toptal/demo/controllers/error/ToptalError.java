@@ -57,7 +57,10 @@ public enum ToptalError {
     EXTERNAL_SERVICE_ERROR(HttpStatus.NOT_FOUND, "can't get the weather info from the external service"),
     
     /** incorrect filter criteria */
-    MAIL_SERVICE_ERROR(HttpStatus.BAD_REQUEST, "can't send the confirmation mail to the user, check the email again");
+    MAIL_SERVICE_ERROR(HttpStatus.BAD_REQUEST, "can't send the confirmation mail to the user, check the email again"),
+
+    /** unauthorized update */
+    UNAUTHRIZED_USER_ERROR(HttpStatus.UNAUTHORIZED, "user is not permitted to do this action on this data");
         
     /** The http status. */
     private HttpStatus httpStatus;

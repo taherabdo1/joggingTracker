@@ -108,13 +108,18 @@ public class JoggingServiceImpl implements JoggingService {
     }
 
     @Override
-    public JoggingReponseDto update(final UpdateJogDto updateJogDto) throws ToptalException {
+    public JoggingReponseDto update(final UpdateJogDto updateJogDto, final String email) throws ToptalException {
         final Jogging selected = joggingRepository.findOne(updateJogDto.getId());
         if (selected == null) {
             throw ToptalError.JOGGING_NOT_FOUND.buildException();
         }
         final Jogging jogging = modelMapper.map(updateJogDto, Jogging.class);
         final User user = userRepository.findOne(selected.getUser().getId());
+        final User loggedInUser = userRepository.findOneByEmail(email).get();// get the current logged in user
+        // if the user is trying to update jog he is not own
+        if (loggedInUser.getId() != user.getId()) {
+            throw ToptalError.UNAUTHRIZED_USER_ERROR.buildException();
+        }
         if (jogging.getLocation() != null) {
             Location location = locationRepository.findByLocationName(jogging.getLocation().getLocationName());
             // new location

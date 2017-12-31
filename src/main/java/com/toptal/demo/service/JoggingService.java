@@ -13,7 +13,7 @@ public interface JoggingService {
 
     public JoggingReponseDto getOne(final Long id) throws ToptalException;
 
-    public JoggingReponseDto update(final UpdateJogDto updateJogDto) throws ToptalException;
+    public JoggingReponseDto update(final UpdateJogDto updateJogDto, final String email) throws ToptalException;
 
     public List<JoggingReponseDto> getAllForAuser(final String userEmail, final int pageNumer, final int pageSize, final String filterBy)
         throws ToptalException;

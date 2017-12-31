@@ -37,7 +37,7 @@ public class JoggingController {
 
     @ApiOperation(value = "create new jogging", code = 201)
     @ApiResponses(value = { @ApiResponse(code = 201, message = "the jogging created successfully") })
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
     public JoggingReponseDto addNewJogging(@Valid @RequestBody final JoggingRequestDTO joggingRequestDTO, final Errors errors) throws ToptalException {
 
         if (errors != null && errors.hasErrors()) {
@@ -53,7 +53,7 @@ public class JoggingController {
 
     @ApiOperation(value = "get jogging by ID", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "the jogging selected") })
-    @RequestMapping(value = "/get/{joggingId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{joggingId}", method = RequestMethod.GET)
     public JoggingReponseDto getOne(@PathVariable("joggingId") final Long id) throws ToptalException {
         return joggingService.getOne(id);
     }
@@ -65,8 +65,9 @@ public class JoggingController {
         if (errors != null && errors.hasErrors()) {
             throw new ToptalException(errors.toString());
         }
-
-        return joggingService.update(updateJogDto);
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        final String email = auth.getName(); // get logged in userEmail
+        return joggingService.update(updateJogDto, email);
     }
 
     @ApiOperation(value = "get All Jogging for a user", code = 200)
@@ -114,7 +115,7 @@ public class JoggingController {
 
     @ApiOperation(value = "delete jogging by ID", code = 200)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "the jogging selected") })
-    @RequestMapping(value = "/delete/{joggingId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{joggingId}", method = RequestMethod.DELETE)
     public Response deleteJogging(@PathVariable("joggingId") final Long id) throws ToptalException {
         joggingService.deleteJogging(id);
         return Response.ok().build();
